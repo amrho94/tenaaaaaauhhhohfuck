@@ -1,22 +1,22 @@
--- Local paths start with neon/; repository paths do not.
+-- Local paths start with tenacity/; repository paths do not.
 local runtime = {
-    Name = 'NeonRuntime',
-    Repo = shared.NeonRepository or 'amrho94/tenaaaaaauhhhohfuck',
-    Branch = shared.NeonBranch or 'main',
-    Root = 'neon/',
+    Name = 'TenacityRuntime',
+    Repo = shared.TenacityRepository or 'amrho94/tenaaaaaauhhhohfuck',
+    Branch = shared.TenacityBranch or 'main',
+    Root = 'tenacity/',
     Stats = {Downloads = 0, DiskHits = 0, MemoryHits = 0}
 }
 
 local sources, pending, missing = {}, {}, {}
-local refresh = shared.NeonRefresh == true and not shared.NeonDeveloper
+local refresh = shared.TenacityRefresh == true and not shared.TenacityDeveloper
 
 local function remoteBase()
     return 'https://raw.githubusercontent.com/'..runtime.Repo..'/'..runtime.Branch..'/'
 end
 
 local function remotePath(path)
-    assert(type(path) == 'string' and path:sub(1, #runtime.Root) == runtime.Root, 'Invalid Neon runtime path')
-    assert(not path:find('..', 1, true), 'Unsafe Neon runtime path')
+    assert(type(path) == 'string' and path:sub(1, #runtime.Root) == runtime.Root, 'Invalid Tenacity runtime path')
+    assert(not path:find('..', 1, true), 'Unsafe Tenacity runtime path')
     return path:sub(#runtime.Root + 1)
 end
 
@@ -40,7 +40,7 @@ function runtime.Read(path, callback, optional)
         runtime.Stats.MemoryHits += 1
     elseif missing[path] then
         if optional then return nil end
-        error('Missing Neon runtime file: '..path, 2)
+        error('Missing Tenacity runtime file: '..path, 2)
     else
         pending[path] = true
         local ok, result = pcall(function()
@@ -64,14 +64,9 @@ function runtime.Read(path, callback, optional)
                 return body
             end
 
-            -- A refresh should never make a working local install unusable just because
-            -- GitHub/executor HTTP failed. Use the last valid disk copy as stale fallback.
             local cached = readDisk()
             if cached then return cached end
 
-            -- Optional files (such as games/<PlaceId>.lua) are genuinely optional.
-            -- Executors report missing raw GitHub files inconsistently: false+blank,
-            -- thrown 404s, or a literal "404: Not Found" body. Treat all as absent.
             if optional then
                 missing[path] = true
                 return nil

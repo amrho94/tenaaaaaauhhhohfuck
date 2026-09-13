@@ -1,7 +1,7 @@
 local loadstring = function(...)
 	local res, err = loadstring(...)
-	if err and neon then
-		neon:CreateNotification('Neon', 'Failed to load : '..err, 30, 'alert')
+	if err and tenacity then
+		tenacity:CreateNotification('Tenacity', 'Failed to load : '..err, 30, 'alert')
 	end
 	return res
 end
@@ -12,16 +12,16 @@ local isfile = isfile or function(file)
 	return suc and res ~= nil and res ~= ''
 end
 local function downloadFile(path, func)
-	if shared.NeonRuntime then return shared.NeonRuntime.Read(path, func) end
+	if shared.TenacityRuntime then return shared.TenacityRuntime.Read(path, func) end
 	if not isfile(path) then
 		local suc, res = pcall(function()
-			local repo=shared.NeonRepository or 'amrho94/tenaaaaaauhhhohfuck';local branch=shared.NeonBranch or readfile('neon/profiles/commit.txt');return game:HttpGet(('https://raw.githubusercontent.com/%s/%s/%s'):format(repo,branch,select(1,path:gsub('neon/',''))),true)
+			local repo=shared.TenacityRepository or 'amrho94/tenaaaaaauhhhohfuck';local branch=shared.TenacityBranch or readfile('tenacity/profiles/commit.txt');return game:HttpGet(('https://raw.githubusercontent.com/%s/%s/%s'):format(repo,branch,select(1,path:gsub('tenacity/',''))),true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
 		end
 		if path:find('.lua') then
-			res = '--Neon cached source file.\n'..res
+			res = '--Tenacity cached source file.\n'..res
 		end
 		writefile(path, res)
 	end
@@ -59,22 +59,22 @@ end
 local gameCamera = workspace.CurrentCamera or workspace:FindFirstChildWhichIsA('Camera')
 local lplr = playersService.LocalPlayer
 
-local neon = shared.Neon
-local client = assert(neon.API or shared.NeonAPI, 'Neon API is unavailable')
-local tween = neon.Libraries.tween
-local targetinfo = neon.Libraries.targetinfo
-local getfontbounds = neon.Libraries.getfontbounds
-local getneonasset = neon.Libraries.getneonasset
-local krsrender = neon.Libraries.krsrender
-	 or assert(loadstring(downloadFile('neon/libraries/krs-render.lua'), 'Krs render'))()(neon)
+local tenacity = shared.Tenacity
+local client = assert(tenacity.API or shared.TenacityAPI, 'Tenacity API is unavailable')
+local tween = tenacity.Libraries.tween
+local targetinfo = tenacity.Libraries.targetinfo
+local getfontbounds = tenacity.Libraries.getfontbounds
+local gettenacityasset = tenacity.Libraries.gettenacityasset
+local krsrender = tenacity.Libraries.krsrender
+	 or assert(loadstring(downloadFile('tenacity/libraries/krs-render.lua'), 'Krs render'))()(tenacity)
 
 
 -- Fallback HUD helpers for older GUI builds.
 do
-	neon.HUDAccentObjects = neon.HUDAccentObjects or setmetatable({}, {__mode = 'k'})
+	tenacity.HUDAccentObjects = tenacity.HUDAccentObjects or setmetatable({}, {__mode = 'k'})
 
-	if type(neon.GetGUIColorRGB) ~= 'function' then
-		function neon:GetGUIColorRGB()
+	if type(tenacity.GetGUIColorRGB) ~= 'function' then
+		function tenacity:GetGUIColorRGB()
 			local guiColor = self.GUIColor
 			if type(guiColor) == 'table'
 				and type(guiColor.Hue) == 'number'
@@ -87,8 +87,8 @@ do
 		end
 	end
 
-	if type(neon.RegisterHUDAccent) ~= 'function' then
-		function neon:RegisterHUDAccent(object, property)
+	if type(tenacity.RegisterHUDAccent) ~= 'function' then
+		function tenacity:RegisterHUDAccent(object, property)
 			if typeof(object) ~= 'Instance' then return object end
 
 			property = property or (
@@ -114,8 +114,8 @@ do
 		end
 	end
 
-	if type(neon.StyleHUDCard) ~= 'function' then
-		function neon:StyleHUDCard(object)
+	if type(tenacity.StyleHUDCard) ~= 'function' then
+		function tenacity:StyleHUDCard(object)
 			if typeof(object) ~= 'Instance' or not object:IsA('GuiObject') then
 				return object
 			end
@@ -170,12 +170,12 @@ do
 	end
 
 	-- Update HUD accents even when the menu is closed.
-	if not neon._HUDAccentUpdateHooked then
-		neon._HUDAccentUpdateHooked = true
+	if not tenacity._HUDAccentUpdateHooked then
+		tenacity._HUDAccentUpdateHooked = true
 
-		local oldUpdateGUIQueue = neon.UpdateGUIQueue
+		local oldUpdateGUIQueue = tenacity.UpdateGUIQueue
 		if type(oldUpdateGUIQueue) == 'function' then
-			neon.UpdateGUIQueue = function(self, hue, sat, val, ...)
+			tenacity.UpdateGUIQueue = function(self, hue, sat, val, ...)
 				local results = table.pack(oldUpdateGUIQueue(self, hue, sat, val, ...))
 				local accentColor = Color3.fromHSV(hue, sat, val)
 
@@ -197,24 +197,24 @@ do
 	end
 end
 
-local function neonVisualColor(offset)
+local function tenacityVisualColor(offset)
 	return krsrender:Accent(offset or 0)
 end
 
-local function neonVisualSequence(offset)
+local function tenacityVisualSequence(offset)
 	offset = offset or 0
 	return ColorSequence.new(
-		neonVisualColor(offset),
-		neonVisualColor((offset + 0.48) % 1)
+		tenacityVisualColor(offset),
+		tenacityVisualColor((offset + 0.48) % 1)
 	)
 end
 
-local function addNeonVisualAccent(parent, offset)
+local function addTenacityVisualAccent(parent, offset)
 	if typeof(parent) ~= 'Instance' or not parent:IsA('GuiObject') then return end
-	local accent = parent:FindFirstChild('NeonVisualAccent')
+	local accent = parent:FindFirstChild('TenacityVisualAccent')
 	if not accent then
 		accent = Instance.new('Frame')
-		accent.Name = 'NeonVisualAccent'
+		accent.Name = 'TenacityVisualAccent'
 		accent.BorderSizePixel = 0
 		accent.Position = UDim2.fromOffset(0, 5)
 		accent.Size = UDim2.new(0, 2, 1, -10)
@@ -228,7 +228,7 @@ local function addNeonVisualAccent(parent, offset)
 	return accent
 end
 
-local function styleNeonMetric(label, caption)
+local function styleTenacityMetric(label, caption)
 	return krsrender:Metric(label, caption, {Offset = 0.08})
 end
 
@@ -267,10 +267,10 @@ local function calculateMoveVector(vec)
 end
 
 local function isFriend(plr, recolor)
-	if neon.Categories.Friends.Options['Use friends'].Enabled then
-		local friend = table.find(neon.Categories.Friends.ListEnabled, plr.Name) and true
+	if tenacity.Categories.Friends.Options['Use friends'].Enabled then
+		local friend = table.find(tenacity.Categories.Friends.ListEnabled, plr.Name) and true
 		if recolor then
-			friend = friend and neon.Categories.Friends.Options['Recolor visuals'].Enabled
+			friend = friend and tenacity.Categories.Friends.Options['Recolor visuals'].Enabled
 		end
 		return friend
 	end
@@ -278,7 +278,7 @@ local function isFriend(plr, recolor)
 end
 
 local function isTarget(plr)
-	return table.find(neon.Categories.Targets.ListEnabled, plr.Name) and true
+	return table.find(tenacity.Categories.Targets.ListEnabled, plr.Name) and true
 end
 
 local function canClick()
@@ -295,7 +295,7 @@ local function canClick()
 			return false
 		end
 	end
-	return (not neon.gui.ScaledGui.ClickGui.Visible) and (not inputService:GetFocusedTextBox())
+	return (not tenacity.gui.ScaledGui.ClickGui.Visible) and (not inputService:GetFocusedTextBox())
 end
 
 local function getTableSize(tab)
@@ -329,12 +329,12 @@ end
 local visited, attempted, tpSwitch = {}, {}, false
 local cacheExpire, cache = tick()
 local function serverHop(pointer, filter)
-	visited = shared.NeonServerHopList and shared.NeonServerHopList:split('/') or {}
+	visited = shared.TenacityServerHopList and shared.TenacityServerHopList:split('/') or {}
 	if not table.find(visited, game.JobId) then
 		table.insert(visited, game.JobId)
 	end
 	if not pointer then
-		notif('Neon', 'Searching for an available server.', 2)
+		notif('Tenacity', 'Searching for an available server.', 2)
 	end
 
 	local suc, httpdata = pcall(function()
@@ -347,7 +347,7 @@ local function serverHop(pointer, filter)
 				cacheExpire, cache = tick() + 60, httpdata
 				table.insert(attempted, v.id)
 
-				notif('Neon', 'Found! Teleporting.', 5)
+				notif('Tenacity', 'Found! Teleporting.', 5)
 				teleportService:TeleportToPlaceInstance(game.PlaceId, v.id)
 				return
 			end
@@ -356,17 +356,17 @@ local function serverHop(pointer, filter)
 		if data.nextPageCursor then
 			serverHop(data.nextPageCursor, filter)
 		else
-			notif('Neon', 'Failed to find an available server.', 5, 'warning')
+			notif('Tenacity', 'Failed to find an available server.', 5, 'warning')
 		end
 	else
-		notif('Neon', 'Failed to grab servers. ('..(data and data.errors[1].message or 'no data')..')', 5, 'warning')
+		notif('Tenacity', 'Failed to grab servers. ('..(data and data.errors[1].message or 'no data')..')', 5, 'warning')
 	end
 end
 
-neon:Clean(lplr.OnTeleport:Connect(function()
+tenacity:Clean(lplr.OnTeleport:Connect(function()
 	if not tpSwitch then
 		tpSwitch = true
-		queue_on_teleport("shared.NeonServerHopList = '"..table.concat(visited, '/').."'\nshared.NeonServerHopPrevious = '"..game.JobId.."'")
+		queue_on_teleport("shared.TenacityServerHopList = '"..table.concat(visited, '/').."'\nshared.TenacityServerHopPrevious = '"..game.JobId.."'")
 	end
 end))
 
@@ -402,9 +402,9 @@ local function motorMove(target, cf)
 	task.delay(0, part.Destroy, part)
 end
 
-local hash = loadstring(downloadFile('neon/libraries/hash.lua'), 'hash')()
-local prediction = loadstring(downloadFile('neon/libraries/prediction.lua'), 'prediction')()
-entitylib = loadstring(downloadFile('neon/libraries/entity.lua'), 'entitylibrary')()
+local hash = loadstring(downloadFile('tenacity/libraries/hash.lua'), 'hash')()
+local prediction = loadstring(downloadFile('tenacity/libraries/prediction.lua'), 'prediction')()
+entitylib = loadstring(downloadFile('tenacity/libraries/entity.lua'), 'entitylibrary')()
 local whitelist = {
 	alreadychecked = {},
 	customtags = {},
@@ -420,11 +420,11 @@ local whitelist = {
 	localprio = 0,
 	said = {}
 }
-neon.Libraries.entity = entitylib
-neon.Libraries.whitelist = whitelist
-neon.Libraries.prediction = prediction
-neon.Libraries.hash = hash
-neon.Libraries.auraanims = {
+tenacity.Libraries.entity = entitylib
+tenacity.Libraries.whitelist = whitelist
+tenacity.Libraries.prediction = prediction
+tenacity.Libraries.hash = hash
+tenacity.Libraries.auraanims = {
 	Normal = {
 		{CFrame = CFrame.new(-0.17, -0.14, -0.12) * CFrame.Angles(math.rad(-53), math.rad(50), math.rad(-64)), Time = 0.1},
 		{CFrame = CFrame.new(-0.55, -0.59, -0.1) * CFrame.Angles(math.rad(-161), math.rad(54), math.rad(-6)), Time = 0.08},
@@ -533,7 +533,7 @@ run(function()
 		if entity.NPC then return true end
 		if isFriend(entity.Player) then return false end
 		if not select(2, whitelist:get(entity.Player)) then return false end
-		if neon.Settings.Modules.Options['Teams by server'].Enabled then
+		if tenacity.Settings.Modules.Options['Teams by server'].Enabled then
 			if not lplr.Team then return true end
 			if not entity.Player.Team then return true end
 			if entity.Player.Team ~= lplr.Team then return true end
@@ -544,14 +544,14 @@ run(function()
 
 	entitylib.getEntityColor = function(entity)
 		entity = entity.Player
-		if not (entity and neon.Settings.Modules.Options['Use team color'].Enabled) then return end
+		if not (entity and tenacity.Settings.Modules.Options['Use team color'].Enabled) then return end
 		if isFriend(entity, true) then
-			return Color3.fromHSV(neon.Categories.Friends.Options['Friends color'].Hue, neon.Categories.Friends.Options['Friends color'].Sat, neon.Categories.Friends.Options['Friends color'].Value)
+			return Color3.fromHSV(tenacity.Categories.Friends.Options['Friends color'].Hue, tenacity.Categories.Friends.Options['Friends color'].Sat, tenacity.Categories.Friends.Options['Friends color'].Value)
 		end
 		return tostring(entity.TeamColor) ~= 'White' and entity.TeamColor.Color or nil
 	end
 
-	neon:Clean(function()
+	tenacity:Clean(function()
 		entitylib.kill()
 		entitylib = nil
 	end)
@@ -559,15 +559,15 @@ run(function()
 		local update = category and category.Update
 		local event = update and update.Event
 		if event and type(event.Connect) == 'function' then
-			neon:Clean(event:Connect(function()
+			tenacity:Clean(event:Connect(function()
 				if entitylib then entitylib.refresh() end
 			end))
 		end
 	end
-	connectCategoryUpdate(neon.Categories.Friends)
-	connectCategoryUpdate(neon.Categories.Targets)
-	neon:Clean(entitylib.Events.LocalAdded:Connect(updateVelocity))
-	neon:Clean(workspace:GetPropertyChangedSignal('CurrentCamera'):Connect(function()
+	connectCategoryUpdate(tenacity.Categories.Friends)
+	connectCategoryUpdate(tenacity.Categories.Targets)
+	tenacity:Clean(entitylib.Events.LocalAdded:Connect(updateVelocity))
+	tenacity:Clean(workspace:GetPropertyChangedSignal('CurrentCamera'):Connect(function()
 		gameCamera = workspace.CurrentCamera or workspace:FindFirstChildWhichIsA('Camera')
 	end))
 end)
@@ -639,9 +639,9 @@ run(function()
 			self:hook()
 
 			if self.localprio == 0 then
-				olduninject = neon.Uninject
-				neon.Uninject = function()
-					notif('Neon', 'No escaping the private members :)', 10)
+				olduninject = tenacity.Uninject
+				tenacity.Uninject = function()
+					notif('Tenacity', 'No escaping the private members :)', 10)
 				end
 			end
 		end
@@ -696,7 +696,7 @@ run(function()
 			return oldchat(data, ...)
 		end)
 
-		neon:Clean(function()
+		tenacity:Clean(function()
 			hookfunction(func, oldchat)
 		end)
 	end
@@ -709,7 +709,7 @@ run(function()
 			if getcallbackvalue and restorefunction and hookfunction then
 				local old
 				task.spawn(function()
-					neon:Clean(function()
+					tenacity:Clean(function()
 						if old then
 							restorefunction(old)
 							old = nil
@@ -747,7 +747,7 @@ run(function()
 						end
 
 						task.wait(0.1)
-					until neon.Loaded == nil
+					until tenacity.Loaded == nil
 				end)
 			end
 		elseif replicatedStorage:FindFirstChild('DefaultChatSystemChatEvents') then
@@ -842,7 +842,7 @@ run(function()
 		container.AnchorPoint = Vector2.new(0.5, 0)
 		container.BackgroundTransparency = 1
 		container.Text = ''
-		container.Parent = neon.gui
+		container.Parent = tenacity.gui
 		local constraint = Instance.new('UISizeConstraint')
 		constraint.MinSize = Vector2.new(24, 60)
 		constraint.MaxSize = Vector2.new(600, math.huge)
@@ -903,7 +903,7 @@ run(function()
 		icon.Size = UDim2.fromOffset(36, 36)
 		icon.Image = ''
 		icon.BackgroundTransparency = 0
-		icon.BackgroundColor3 = neon:GetGUIColorRGB()
+		icon.BackgroundColor3 = tenacity:GetGUIColorRGB()
 		icon.Parent = iconframe
 		constraint.MaxSize = Vector2.new(math.max(getfontbounds(text, 20, textlabel.FontFace).X + 80, 600), math.huge)
 
@@ -912,7 +912,7 @@ run(function()
 		})
 
 		task.delay(20, function()
-			if neon.Loaded ~= nil then
+			if tenacity.Loaded ~= nil then
 				tween:Tween(container, TweenInfo.new(0.3), {
 					Position = UDim2.new(0.5, 0, 0, -60)
 				})
@@ -938,7 +938,7 @@ run(function()
 
 		if not first or whitelist.textdata ~= whitelist.olddata then
 			if not first then
-				whitelist.olddata = isfile('neon/profiles/whitelist.json') and readfile('neon/profiles/whitelist.json') or nil
+				whitelist.olddata = isfile('tenacity/profiles/whitelist.json') and readfile('tenacity/profiles/whitelist.json') or nil
 			end
 
 			local suc, res = pcall(function()
@@ -960,14 +960,14 @@ run(function()
 				whitelist.connection = playersService.PlayerAdded:Connect(function(v)
 					whitelist:playeradded(v, true)
 				end)
-				neon:Clean(whitelist.connection)
+				tenacity:Clean(whitelist.connection)
 			end
 
 			for _, v in playersService:GetPlayers() do
 				whitelist:playeradded(v)
 			end
 
-			if entitylib.Running and neon.Loaded then
+			if entitylib.Running and tenacity.Loaded then
 				entitylib.refresh()
 			end
 
@@ -982,12 +982,12 @@ run(function()
 				end
 				whitelist.olddata = whitelist.textdata
 				pcall(function()
-					writefile('neon/profiles/whitelist.json', whitelist.textdata)
+					writefile('tenacity/profiles/whitelist.json', whitelist.textdata)
 				end)
 			end
 
 			if whitelist.data.KillTenacity then
-				neon:Uninject()
+				tenacity:Uninject()
 				return true
 			end
 
@@ -1059,13 +1059,13 @@ run(function()
 		toggle = function(args)
 			if #args < 1 then return end
 			if args[1]:lower() == 'all' then
-				for i, v in neon.Modules do
+				for i, v in tenacity.Modules do
 					if i ~= 'Panic' and i ~= 'ServerHop' and i ~= 'Rejoin' then
 						v:Toggle()
 					end
 				end
 			else
-				for i, v in neon.Modules do
+				for i, v in tenacity.Modules do
 					if i:lower() == args[1]:lower() then
 						v:Toggle()
 						break
@@ -1084,12 +1084,12 @@ run(function()
 		end,
 		uninject = function()
 			if olduninject then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
-				olduninject(neon)
+				olduninject(tenacity)
 			else
-				neon:Uninject()
+				tenacity:Uninject()
 			end
 		end,
 		void = function()
@@ -1106,10 +1106,10 @@ run(function()
 			end
 
 			task.wait(10)
-		until neon.Loaded == nil
+		until tenacity.Loaded == nil
 	end)
 
-	neon:Clean(function()
+	tenacity:Clean(function()
 		table.clear(whitelist.commands)
 		table.clear(whitelist.data)
 		table.clear(whitelist)
@@ -1153,7 +1153,7 @@ run(function()
 						CircleObject.Position = inputService:GetMouseLocation()
 					end
 	
-					if rightClicked and not neon.gui.ScaledGui.ClickGui.Visible then
+					if rightClicked and not tenacity.gui.ScaledGui.ClickGui.Visible then
 						ent = entitylib.EntityMouse({
 							Range = FOV.Value,
 							Part = Part.Value,
@@ -1231,7 +1231,7 @@ run(function()
 				CircleObject = Drawing.new('Circle')
 				CircleObject.Filled = CircleFilled.Enabled
 				CircleObject.Color = Color3.fromHSV(CircleColor.Hue, CircleColor.Sat, CircleColor.Value)
-				CircleObject.Position = neon.gui.AbsoluteSize / 2
+				CircleObject.Position = tenacity.gui.AbsoluteSize / 2
 				CircleObject.Radius = FOV.Value
 				CircleObject.NumSides = 100
 				CircleObject.Transparency = 1 - CircleTransparency.Value
@@ -1312,7 +1312,7 @@ run(function()
 						end
 					else
 						if mouse1click and (isrbxactive or iswindowactive)() then
-							if not neon.gui.ScaledGui.ClickGui.Visible then
+							if not tenacity.gui.ScaledGui.ClickGui.Visible then
 								(Mode.Value == 'Click' and mouse1click or mouse2click)()
 							end
 						end
@@ -1670,7 +1670,7 @@ run(function()
 				activeRun = {cancelled = false}
 				SilentAim:Clean(function() activeRun.cancelled = true end)
 				if Method.Value == 'Arsenal' then
-					local additions = neon.Libraries.additions
+					local additions = tenacity.Libraries.additions
 					local api = additions and additions.aim
 					if not api or not api.ars then
 						client:Notify('SilentAim', 'Arsenal mode needs the additions bundle and must be used in Arsenal.', 8, 'alert')
@@ -1919,7 +1919,7 @@ run(function()
 				CircleObject = Drawing.new('Circle')
 				CircleObject.Filled = CircleFilled.Enabled
 				CircleObject.Color = Color3.fromHSV(CircleColor.Hue, CircleColor.Sat, CircleColor.Value)
-				CircleObject.Position = neon.gui.AbsoluteSize / 2
+				CircleObject.Position = tenacity.gui.AbsoluteSize / 2
 				CircleObject.Radius = Range.Value
 				CircleObject.NumSides = 100
 				CircleObject.Transparency = 1 - CircleTransparency.Value
@@ -3013,7 +3013,7 @@ run(function()
 					box.CFrame = CFrame.new(0, -0.5, 0)
 					box.Size = Vector3.new(3, 5, 3)
 					box.ZIndex = 0
-					box.Parent = neon.holder
+					box.Parent = tenacity.holder
 					Boxes[i] = box
 				end
 			else
@@ -3902,7 +3902,7 @@ run(function()
 				end
 	
 				old = module.moveFunction
-				local flymod, ang, oldent = neon.Modules.Fly or {Enabled = false}
+				local flymod, ang, oldent = tenacity.Modules.Fly or {Enabled = false}
 				module.moveFunction = function(self, vec, face)
 					local wallcheck = Targets.Walls.Enabled
 					local ent = not inputService:IsKeyDown(Enum.KeyCode.S) and entitylib.EntityPosition({
@@ -4038,7 +4038,7 @@ run(function()
 	local DistanceLimit
 	local Reference = {}
 	local Folder = Instance.new('Folder')
-	Folder.Parent = neon.gui
+	Folder.Parent = tenacity.gui
 
 	local function setArrowColor(data, col)
 		data.Core.TextColor3 = col
@@ -4056,9 +4056,9 @@ run(function()
 		if not Targets.Players.Enabled and ent.Player then return end
 		if not Targets.NPCs.Enabled and ent.NPC then return end
 		if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-		if neon.ThreadFix then setthreadidentity(8) end
+		if tenacity.ThreadFix then setthreadidentity(8) end
 
-		local col = entitylib.getEntityColor(ent) or (krsrender:IsMode(Mode.Value) and neonVisualColor(0.10) or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value))
+		local col = entitylib.getEntityColor(ent) or (krsrender:IsMode(Mode.Value) and tenacityVisualColor(0.10) or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value))
 		local arrow = Instance.new('TextLabel')
 		arrow.Name = 'Core'
 		arrow.Size = UDim2.fromOffset(30, 30)
@@ -4092,7 +4092,7 @@ run(function()
 	local function Removed(ent)
 		local data = Reference[ent]
 		if data then
-			if neon.ThreadFix then setthreadidentity(8) end
+			if tenacity.ThreadFix then setthreadidentity(8) end
 			Reference[ent] = nil
 			for _, obj in data do obj:Destroy() end
 		end
@@ -4101,7 +4101,7 @@ run(function()
 	local function ColorFunc(hue, sat, val)
 		local col = Color3.fromHSV(hue, sat, val)
 		for ent, data in Reference do
-			local fallback = krsrender:IsMode(Mode.Value) and neonVisualColor(0.10) or col
+			local fallback = krsrender:IsMode(Mode.Value) and tenacityVisualColor(0.10) or col
 			setArrowColor(data, entitylib.getEntityColor(ent) or fallback)
 		end
 	end
@@ -4153,7 +4153,7 @@ run(function()
 					if Reference[ent] then Removed(ent) end
 					Added(ent)
 				end))
-				Arrows:Clean(neon.Categories.Friends.ColorUpdate.Event:Connect(function()
+				Arrows:Clean(tenacity.Categories.Friends.ColorUpdate.Event:Connect(function()
 					ColorFunc(Color.Hue, Color.Sat, Color.Value)
 				end))
 				Arrows:Clean(runService.RenderStepped:Connect(Loop))
@@ -4218,7 +4218,7 @@ run(function()
 	local Walls
 	local Reference = {}
 	local Folder = Instance.new('Folder')
-	Folder.Parent = neon.holder
+	Folder.Parent = tenacity.holder
 
 	local function bodyParts(ent)
 		local parts = {}
@@ -4250,9 +4250,9 @@ run(function()
 		if not Targets.Players.Enabled and ent.Player then return end
 		if not Targets.NPCs.Enabled and ent.NPC then return end
 		if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-		if neon.ThreadFix then setthreadidentity(8) end
+		if tenacity.ThreadFix then setthreadidentity(8) end
 
-		local col = entitylib.getEntityColor(ent) or (krsrender:IsMode(Mode.Value) and neonVisualColor(0.12) or Color3.fromHSV(FillColor.Hue, FillColor.Sat, FillColor.Value))
+		local col = entitylib.getEntityColor(ent) or (krsrender:IsMode(Mode.Value) and tenacityVisualColor(0.12) or Color3.fromHSV(FillColor.Hue, FillColor.Sat, FillColor.Value))
 		local outline = Color3.fromHSV(OutlineColor.Hue, OutlineColor.Sat, OutlineColor.Value)
 		local data = {Mode = Mode.Value, Handles = {}, Glow = {}, GlowOuter = {}}
 
@@ -4280,7 +4280,7 @@ run(function()
 	local function Removed(ent)
 		local data = Reference[ent]
 		if not data then return end
-		if neon.ThreadFix then setthreadidentity(8) end
+		if tenacity.ThreadFix then setthreadidentity(8) end
 		Reference[ent] = nil
 		if data.Main then data.Main:Destroy() end
 		if data.Face then data.Face:Destroy() end
@@ -4309,9 +4309,9 @@ run(function()
 					if Reference[ent] then Removed(ent) end
 					Added(ent)
 				end))
-				Chams:Clean(neon.Categories.Friends.ColorUpdate.Event:Connect(function()
+				Chams:Clean(tenacity.Categories.Friends.ColorUpdate.Event:Connect(function()
 					for ent, data in Reference do
-						applyColor(ent, data, entitylib.getEntityColor(ent) or (krsrender:IsMode(data.Mode) and neonVisualColor(0.12) or Color3.fromHSV(FillColor.Hue, FillColor.Sat, FillColor.Value)))
+						applyColor(ent, data, entitylib.getEntityColor(ent) or (krsrender:IsMode(data.Mode) and tenacityVisualColor(0.12) or Color3.fromHSV(FillColor.Hue, FillColor.Sat, FillColor.Value)))
 					end
 				end))
 				for _, ent in entitylib.List do
@@ -4345,7 +4345,7 @@ run(function()
 		Function = function(hue, sat, val)
 			local col = Color3.fromHSV(hue, sat, val)
 			for ent, data in Reference do
-				local fallback = krsrender:IsMode(data.Mode) and neonVisualColor(0.12) or col
+				local fallback = krsrender:IsMode(data.Mode) and tenacityVisualColor(0.12) or col
 				applyColor(ent, data, entitylib.getEntityColor(ent) or fallback)
 			end
 		end
@@ -4436,7 +4436,7 @@ run(function()
 			if not Targets.Players.Enabled and ent.Player then return end
 			if not Targets.NPCs.Enabled and ent.NPC then return end
 			if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-			if neon.ThreadFix then
+			if tenacity.ThreadFix then
 				setthreadidentity(8)
 			end
 			local EntityESP = {}
@@ -4502,7 +4502,7 @@ run(function()
 			if not Targets.Players.Enabled and ent.Player then return end
 			if not Targets.NPCs.Enabled and ent.NPC then return end
 			if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-			if neon.ThreadFix then
+			if tenacity.ThreadFix then
 				setthreadidentity(8)
 			end
 			local EntityESP = {}
@@ -4531,7 +4531,7 @@ run(function()
 			if not Targets.Players.Enabled and ent.Player then return end
 			if not Targets.NPCs.Enabled and ent.NPC then return end
 			if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-			if neon.ThreadFix then
+			if tenacity.ThreadFix then
 				setthreadidentity(8)
 			end
 			local EntityESP = {}
@@ -4555,12 +4555,12 @@ run(function()
 		end
 	}
 	
-	ESPAdded.DrawingNeon = function(ent)
+	ESPAdded.DrawingTenacity = function(ent)
 		if not Targets.Players.Enabled and ent.Player then return end
 		if not Targets.NPCs.Enabled and ent.NPC then return end
 		if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-		if neon.ThreadFix then setthreadidentity(8) end
-		local col = entitylib.getEntityColor(ent) or neonVisualColor(0.14)
+		if tenacity.ThreadFix then setthreadidentity(8) end
+		local col = entitylib.getEntityColor(ent) or tenacityVisualColor(0.14)
 		local data = {}
 		data.GlowOuter = Drawing.new('Square')
 		data.GlowOuter.Filled = false
@@ -4622,7 +4622,7 @@ run(function()
 		Drawing2D = function(ent)
 			local EntityESP = Reference[ent]
 			if EntityESP then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
 				Reference[ent] = nil
@@ -4637,13 +4637,13 @@ run(function()
 	}
 	ESPRemoved.Drawing3D = ESPRemoved.Drawing2D
 	ESPRemoved.DrawingSkeleton = ESPRemoved.Drawing2D
-	ESPRemoved.DrawingNeon = ESPRemoved.Drawing2D
+	ESPRemoved.DrawingTenacity = ESPRemoved.Drawing2D
 	
 	local ESPUpdated = {
 		Drawing2D = function(ent)
 			local EntityESP = Reference[ent]
 			if EntityESP then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
 				
@@ -4659,7 +4659,7 @@ run(function()
 		end
 	}
 	
-	ESPUpdated.DrawingNeon = ESPUpdated.Drawing2D
+	ESPUpdated.DrawingTenacity = ESPUpdated.Drawing2D
 
 	local ColorFunc = {
 		Drawing2D = function(hue, sat, val)
@@ -4682,10 +4682,10 @@ run(function()
 		end
 	}
 	ColorFunc.DrawingSkeleton = ColorFunc.Drawing3D
-	ColorFunc.DrawingNeon = function(hue, sat, val)
+	ColorFunc.DrawingTenacity = function(hue, sat, val)
 		local col = Color3.fromHSV(hue, sat, val)
 		for ent, data in Reference do
-			local playercol = entitylib.getEntityColor(ent) or neonVisualColor(0.14)
+			local playercol = entitylib.getEntityColor(ent) or tenacityVisualColor(0.14)
 			for _, key in {'Main', 'Glow', 'GlowOuter', 'Fill'} do
 				if data[key] then data[key].Color = playercol end
 			end
@@ -4852,7 +4852,7 @@ run(function()
 		end
 	}
 	
-	ESPLoop.DrawingNeon = function()
+	ESPLoop.DrawingTenacity = function()
 		for ent, data in Reference do
 			if Distance.Enabled then
 				local distance = entitylib.isAlive and (entitylib.character.RootPart.Position - ent.RootPart.Position).Magnitude or math.huge
@@ -4898,7 +4898,7 @@ run(function()
 		Name = 'ESP',
 		Function = function(callback)
 			if callback then
-			methodused = krsrender:IsMode(Method.Value) and 'DrawingNeon' or 'Drawing'..Method.Value
+			methodused = krsrender:IsMode(Method.Value) and 'DrawingTenacity' or 'Drawing'..Method.Value
 				if ESPRemoved[methodused] then
 					ESP:Clean(entitylib.Events.EntityRemoved:Connect(ESPRemoved[methodused]))
 				end
@@ -4923,7 +4923,7 @@ run(function()
 					end
 				end
 				if ColorFunc[methodused] then
-					ESP:Clean(neon.Categories.Friends.ColorUpdate.Event:Connect(function()
+					ESP:Clean(tenacity.Categories.Friends.ColorUpdate.Event:Connect(function()
 						ColorFunc[methodused](Color.Hue, Color.Sat, Color.Value)
 					end))
 				end
@@ -5148,7 +5148,7 @@ run(function()
 		Name = 'GamingChair',
 		Function = function(callback)
 			if callback then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
 	
@@ -5176,9 +5176,9 @@ run(function()
 					chairweld.Part1 = entitylib.character.RootPart
 				end
 				chairhighlight = Instance.new('Highlight')
-				chairhighlight.FillColor = neonVisualColor(0.08)
+				chairhighlight.FillColor = tenacityVisualColor(0.08)
 				chairhighlight.FillTransparency = 0.96
-				chairhighlight.OutlineColor = neonVisualColor(0.12)
+				chairhighlight.OutlineColor = tenacityVisualColor(0.12)
 				chairhighlight.DepthMode = Enum.HighlightDepthMode.Occluded
 				chairhighlight.OutlineTransparency = 0.2
 				chairhighlight.Parent = chair
@@ -5222,7 +5222,7 @@ run(function()
 					trail.Texture = 'http://www.roblox.com/asset/?id=13005168530'
 					trail.TextureMode = Enum.TextureMode.Static
 					trail.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.18), NumberSequenceKeypoint.new(1, 1)})
-					trail.Color = neonVisualSequence(0.05)
+					trail.Color = tenacityVisualSequence(0.05)
 					trail.Attachment0 = attachment
 					trail.Attachment1 = attachment2
 					trail.Lifetime = 20
@@ -5257,7 +5257,7 @@ run(function()
 						chairfan.Velocity = Vector3.zero
 						chairfan.CFrame = chair.CFrame * CFrame.new(0.047, -1.873, 0) * CFrame.Angles(0, math.rad(tick() * 180 % 360), math.rad(180))
 						local moving = entitylib.character.Humanoid:GetState() == Enum.HumanoidStateType.Running and entitylib.character.Humanoid.MoveDirection ~= Vector3.zero
-						local flying = neon.Modules.Fly and neon.Modules.Fly.Enabled or neon.Modules.LongJump and neon.Modules.LongJump.Enabled or neon.Modules.InfiniteFly and neon.Modules.InfiniteFly.Enabled
+						local flying = tenacity.Modules.Fly and tenacity.Modules.Fly.Enabled or tenacity.Modules.LongJump and tenacity.Modules.LongJump.Enabled or tenacity.Modules.InfiniteFly and tenacity.Modules.InfiniteFly.Enabled
 						if movingsound.TimePosition > 1.9 then
 							movingsound.TimePosition = 0.2
 						end
@@ -5381,22 +5381,22 @@ run(function()
 		Function = function(callback)
 			if callback then
 				local card = Instance.new('Frame')
-				card.Name = 'NeonHealth'
+				card.Name = 'TenacityHealth'
 				card.Size = UDim2.fromOffset(154, 38)
 				card.Position = UDim2.new(0.5, 0, 0.5, 34)
 				card.AnchorPoint = Vector2.new(0.5, 0)
 				card.BackgroundColor3 = krsrender.Palette.Surface
 				card.BackgroundTransparency = 0.12
 				card.BorderSizePixel = 0
-				card.Parent = neon.gui
-				neon:StyleHUDCard(card)
-				local inheritedAccent = card:FindFirstChild('NeonCardAccent')
+				card.Parent = tenacity.gui
+				tenacity:StyleHUDCard(card)
+				local inheritedAccent = card:FindFirstChild('TenacityCardAccent')
 				if inheritedAccent then inheritedAccent:Destroy() end
 				local cardCorner = card:FindFirstChildWhichIsA('UICorner')
 				if cardCorner then cardCorner.CornerRadius = UDim.new(0, 4) end
 				local cardStroke = card:FindFirstChildWhichIsA('UIStroke')
 				if cardStroke then cardStroke.Color = krsrender.Palette.Border; cardStroke.Transparency = 0.68 end
-				addNeonVisualAccent(card, 0.08)
+				addTenacityVisualAccent(card, 0.08)
 
 				local value = Instance.new('TextLabel')
 				value.BackgroundTransparency = 1
@@ -5407,8 +5407,8 @@ run(function()
 				value.TextSize = 16
 				value.TextXAlignment = Enum.TextXAlignment.Left
 				value.Parent = card
-				if neon.Libraries.uipallet and neon.Libraries.uipallet.FontSemiBold then
-					value.FontFace = neon.Libraries.uipallet.FontSemiBold
+				if tenacity.Libraries.uipallet and tenacity.Libraries.uipallet.FontSemiBold then
+					value.FontFace = tenacity.Libraries.uipallet.FontSemiBold
 				end
 
 				local percent = Instance.new('TextLabel')
@@ -5417,11 +5417,11 @@ run(function()
 				percent.Position = UDim2.new(1, -10, 0, 5)
 				percent.Size = UDim2.fromOffset(52, 21)
 				percent.Text = '100%'
-				percent.TextColor3 = neonVisualColor(0.50)
+				percent.TextColor3 = tenacityVisualColor(0.50)
 				percent.TextSize = 12
 				percent.TextXAlignment = Enum.TextXAlignment.Right
 				percent.Parent = card
-				neon:RegisterHUDAccent(percent, 'TextColor3')
+				tenacity:RegisterHUDAccent(percent, 'TextColor3')
 
 				local track = Instance.new('Frame')
 				track.BackgroundColor3 = krsrender.Palette.Void
@@ -5441,7 +5441,7 @@ run(function()
 				local fillCorner = Instance.new('UICorner')
 				fillCorner.CornerRadius = UDim.new(1, 0)
 				fillCorner.Parent = fill
-				fill.BackgroundColor3 = neonVisualColor(0.05)
+				fill.BackgroundColor3 = tenacityVisualColor(0.05)
 				krsrender:Register(fill, 'BackgroundColor3', 0.05)
 
 				Health:Clean(card)
@@ -5486,7 +5486,7 @@ run(function()
 	local DistanceLimit
 	local Strings, Sizes, Reference = {}, {}, {}
 	local Folder = Instance.new('Folder')
-	Folder.Parent = neon.gui
+	Folder.Parent = tenacity.gui
 	local methodused
 	
 	local Added = {
@@ -5494,7 +5494,7 @@ run(function()
 			if not Targets.Players.Enabled and ent.Player then return end
 			if not Targets.NPCs.Enabled and ent.NPC then return end
 			if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-			if neon.ThreadFix then
+			if tenacity.ThreadFix then
 				setthreadidentity(8)
 			end
 	
@@ -5559,18 +5559,18 @@ run(function()
 		end
 	}
 	
-	Added.Neon = function(ent)
+	Added.Tenacity = function(ent)
 		if not Targets.Players.Enabled and ent.Player then return end
 		if not Targets.NPCs.Enabled and ent.NPC then return end
 		if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-		if neon.ThreadFix then setthreadidentity(8) end
+		if tenacity.ThreadFix then setthreadidentity(8) end
 		Strings[ent] = ent.Player and whitelist:tag(ent.Player, true, true)..(DisplayName.Enabled and ent.Player.DisplayName or ent.Player.Name) or ent.Character.Name
 		if Health.Enabled then
 			local hp = Color3.fromHSV(math.clamp(ent.Health / ent.MaxHealth, 0, 1) / 2.5, 0.89, 0.75)
 			Strings[ent] = Strings[ent]..' <font color="#'..hp:ToHex()..'">'..math.round(ent.Health)..'</font>'
 		end
-		if Distance.Enabled then Strings[ent] = '<font color="#'..neonVisualColor(0.52):ToHex()..'">◆ %s</font>  '..Strings[ent] end
-		local col = entitylib.getEntityColor(ent) or neonVisualColor(0.12)
+		if Distance.Enabled then Strings[ent] = '<font color="#'..tenacityVisualColor(0.52):ToHex()..'">◆ %s</font>  '..Strings[ent] end
+		local col = entitylib.getEntityColor(ent) or tenacityVisualColor(0.12)
 		local root = Instance.new('Frame')
 		root.Name = ent.Player and ent.Player.Name or ent.Character.Name
 		root.AnchorPoint = Vector2.new(0.5, 1)
@@ -5630,7 +5630,7 @@ run(function()
 		Normal = function(ent)
 			local v = Reference[ent]
 			if v then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
 				Reference[ent] = nil
@@ -5642,7 +5642,7 @@ run(function()
 		Drawing = function(ent)
 			local v = Reference[ent]
 			if v then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
 				Reference[ent] = nil
@@ -5658,10 +5658,10 @@ run(function()
 		end
 	}
 	
-	Removed.Neon = function(ent)
+	Removed.Tenacity = function(ent)
 		local data = Reference[ent]
 		if data then
-			if neon.ThreadFix then setthreadidentity(8) end
+			if tenacity.ThreadFix then setthreadidentity(8) end
 			Reference[ent] = nil
 			Strings[ent] = nil
 			Sizes[ent] = nil
@@ -5673,7 +5673,7 @@ run(function()
 		Normal = function(ent)
 			local nametag = Reference[ent]
 			if nametag then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
 				Sizes[ent] = nil
@@ -5696,7 +5696,7 @@ run(function()
 		Drawing = function(ent)
 			local nametag = Reference[ent]
 			if nametag then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
 				Sizes[ent] = nil
@@ -5719,7 +5719,7 @@ run(function()
 		end
 	}
 
-	Updated.Neon = function(ent)
+	Updated.Tenacity = function(ent)
 		local data = Reference[ent]
 		if not data then return end
 		Sizes[ent] = nil
@@ -5728,7 +5728,7 @@ run(function()
 			local hp = Color3.fromHSV(math.clamp(ent.Health / ent.MaxHealth, 0, 1) / 2.5, 0.89, 0.75)
 			Strings[ent] = Strings[ent]..' <font color="#'..hp:ToHex()..'">'..math.round(ent.Health)..'</font>'
 		end
-		if Distance.Enabled then Strings[ent] = '<font color="#'..neonVisualColor(0.52):ToHex()..'">◆ %s</font>  '..Strings[ent] end
+		if Distance.Enabled then Strings[ent] = '<font color="#'..tenacityVisualColor(0.52):ToHex()..'">◆ %s</font>  '..Strings[ent] end
 		data.Text.Text = Strings[ent]
 		local size = getfontbounds(removeTags(Strings[ent]), data.Text.TextSize, data.Text.FontFace, Vector2.new(100000, 100000))
 		data.Text.Size = UDim2.fromOffset(size.X, size.Y + 1)
@@ -5751,9 +5751,9 @@ run(function()
 		end
 	}
 	
-	ColorFunc.Neon = function(hue, sat, val)
+	ColorFunc.Tenacity = function(hue, sat, val)
 		for ent, data in Reference do
-			local playercol = entitylib.getEntityColor(ent) or neonVisualColor(0.12)
+			local playercol = entitylib.getEntityColor(ent) or tenacityVisualColor(0.12)
 			data.Text.TextColor3 = krsrender.Palette.Text
 			data.Accent.BackgroundColor3 = playercol
 			data.Stroke.Color = krsrender.Palette.Border
@@ -5822,7 +5822,7 @@ run(function()
 		end
 	}
 	
-	Loop.Neon = function()
+	Loop.Tenacity = function()
 		for ent, data in Reference do
 			if DistanceCheck.Enabled then
 				local dist = entitylib.isAlive and (entitylib.character.RootPart.Position - ent.RootPart.Position).Magnitude or math.huge
@@ -5853,7 +5853,7 @@ run(function()
 		Name = 'NameTags',
 		Function = function(callback)
 			if callback then
-				methodused = krsrender:IsMode(Mode.Value) and 'Neon' or (DrawingToggle.Enabled and 'Drawing' or 'Normal')
+				methodused = krsrender:IsMode(Mode.Value) and 'Tenacity' or (DrawingToggle.Enabled and 'Drawing' or 'Normal')
 				if Removed[methodused] then
 					NameTags:Clean(entitylib.Events.EntityRemoved:Connect(Removed[methodused]))
 				end
@@ -5878,7 +5878,7 @@ run(function()
 					end
 				end
 				if ColorFunc[methodused] then
-					NameTags:Clean(neon.Categories.Friends.ColorUpdate.Event:Connect(function()
+					NameTags:Clean(tenacity.Categories.Friends.ColorUpdate.Event:Connect(function()
 						ColorFunc[methodused](Color.Hue, Color.Sat, Color.Value)
 					end))
 				end
@@ -6046,7 +6046,7 @@ run(function()
 	local models = {}
 	
 	local function addMesh(ent)
-		if neon.ThreadFix then 
+		if tenacity.ThreadFix then 
 			setthreadidentity(8)
 		end
 		local root = ent.RootPart
@@ -6170,14 +6170,14 @@ run(function()
 		if not Targets.Players.Enabled and ent.Player then return end
 		if not Targets.NPCs.Enabled and ent.NPC then return end
 		if (not ent.Targetable) and (not ent.Friend) then return end
-		if neon.ThreadFix then
+		if tenacity.ThreadFix then
 			setthreadidentity(8)
 		end
 	
 		local dot = Instance.new('Frame')
 		dot.Size = UDim2.fromOffset(4, 4)
 		dot.AnchorPoint = Vector2.new(0.5, 0.5)
-		dot.BackgroundColor3 = entitylib.getEntityColor(ent) or neonVisualColor(0.22)
+		dot.BackgroundColor3 = entitylib.getEntityColor(ent) or tenacityVisualColor(0.22)
 		dot.Parent = bkg
 		local corner = Instance.new('UICorner')
 		corner.CornerRadius = UDim.new(DotStyle.Value == 'Circles' and 1 or 0, 0)
@@ -6193,7 +6193,7 @@ run(function()
 	local function Removed(ent)
 		local v = Reference[ent]
 		if v then
-			if neon.ThreadFix then
+			if tenacity.ThreadFix then
 				setthreadidentity(8)
 			end
 			Reference[ent] = nil
@@ -6203,7 +6203,7 @@ run(function()
 	
 	Radar = client.UI:Overlay({
 		Name = 'Radar',
-		Icon = getneonasset('neon/assets/neon/vision.png'),
+		Icon = gettenacityasset('tenacity/assets/tenacity/vision.png'),
 		Size = UDim2.fromOffset(14, 14),
 		Position = UDim2.fromOffset(12, 13),
 		Function = function(callback)
@@ -6221,9 +6221,9 @@ run(function()
 					end
 					Added(ent)
 				end))
-				Radar:Clean(neon.Categories.Friends.ColorUpdate.Event:Connect(function()
+				Radar:Clean(tenacity.Categories.Friends.ColorUpdate.Event:Connect(function()
 					for ent, dot in Reference do
-						dot.BackgroundColor3 = entitylib.getEntityColor(ent) or neonVisualColor(0.22)
+						dot.BackgroundColor3 = entitylib.getEntityColor(ent) or tenacityVisualColor(0.22)
 					end
 				end))
 				Radar:Clean(runService.RenderStepped:Connect(function()
@@ -6297,7 +6297,7 @@ run(function()
 	local bar = Instance.new('Frame')
 	bar.Size = UDim2.new(1, -10, 0, 2)
 	bar.Position = UDim2.fromOffset(5, 0)
-	bar.BackgroundColor3 = neonVisualColor(0.08)
+	bar.BackgroundColor3 = tenacityVisualColor(0.08)
 	bar.Parent = bkg
 	local barcorner = Instance.new('UICorner')
 	barcorner.CornerRadius = UDim.new(0, 8)
@@ -6339,7 +6339,7 @@ run(function()
 	local Mode
 	local Reference = {}
 	local Folder = Instance.new('Folder')
-	Folder.Parent = neon.holder
+	Folder.Parent = tenacity.holder
 
 	local function destroyData(v)
 		local data = Reference[v]
@@ -6355,11 +6355,11 @@ run(function()
 		if not (v:IsA('BasePart') or v:IsA('Model')) then return end
 
 		local manual = Color3.fromHSV(Color.Hue, Color.Sat, Color.Value)
-		local col = krsrender:IsMode(Mode.Value) and neonVisualColor(0.16) or manual
+		local col = krsrender:IsMode(Mode.Value) and tenacityVisualColor(0.16) or manual
 		local data = {}
 		if krsrender:IsMode(Mode.Value) then
 			local highlight = Instance.new('Highlight')
-			highlight.Name = 'NeonSearch'
+			highlight.Name = 'TenacitySearch'
 			highlight.Adornee = v
 			highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 			highlight.FillColor = col
@@ -6408,7 +6408,7 @@ run(function()
 		Name = 'Color',
 		Function = function(hue, sat, val)
 			for target, data in Reference do
-				local col = krsrender:IsMode(Mode.Value) and neonVisualColor(0.16) or Color3.fromHSV(hue, sat, val)
+				local col = krsrender:IsMode(Mode.Value) and tenacityVisualColor(0.16) or Color3.fromHSV(hue, sat, val)
 				for _, obj in data do
 					if obj:IsA('Highlight') then obj.FillColor = col; obj.OutlineColor = col else obj.Color3 = col end
 				end
@@ -6421,7 +6421,7 @@ run(function()
 			for _, data in Reference do
 				for _, obj in data do
 					if obj:IsA('Highlight') then obj.FillTransparency = math.clamp(val + 0.35, 0.55, 0.94)
-					elseif obj:IsA('BoxHandleAdornment') and obj.Name ~= 'NeonGlow' then obj.Transparency = val end
+					elseif obj:IsA('BoxHandleAdornment') and obj.Name ~= 'TenacityGlow' then obj.Transparency = val end
 				end
 			end
 		end
@@ -6447,7 +6447,7 @@ run(function()
 	
 	SessionInfo = client.UI:Overlay({
 		Name = 'Session Info',
-		Icon = getneonasset('neon/assets/neon/info.png'),
+		Icon = gettenacityasset('tenacity/assets/tenacity/info.png'),
 		Size = UDim2.fromOffset(16, 12),
 		Position = UDim2.fromOffset(12, 14),
 		Function = function(callback)
@@ -6456,22 +6456,22 @@ run(function()
 				SessionInfo:Clean(playersService.LocalPlayer.OnTeleport:Connect(function()
 					if not teleportedServers then
 						teleportedServers = true
-						queue_on_teleport("shared.NeonSessionInfo = '"..httpService:JSONEncode(neon.Libraries.sessioninfo.Objects).."'")
+						queue_on_teleport("shared.TenacitySessionInfo = '"..httpService:JSONEncode(tenacity.Libraries.sessioninfo.Objects).."'")
 					end
 				end))
 	
-				if shared.NeonSessionInfo then
-					for i, v in httpService:JSONDecode(shared.NeonSessionInfo) do
-						if neon.Libraries.sessioninfo.Objects[i] and v.Saved then
-							neon.Libraries.sessioninfo.Objects[i].Value = v.Value
+				if shared.TenacitySessionInfo then
+					for i, v in httpService:JSONDecode(shared.TenacitySessionInfo) do
+						if tenacity.Libraries.sessioninfo.Objects[i] and v.Saved then
+							tenacity.Libraries.sessioninfo.Objects[i].Value = v.Value
 						end
 					end
 				end
 	
 				repeat
-					if neon.Libraries.sessioninfo then
+					if tenacity.Libraries.sessioninfo then
 						local entries = {}
-						for name, item in neon.Libraries.sessioninfo.Objects do
+						for name, item in tenacity.Libraries.sessioninfo.Objects do
 							if not table.find(Hide.ListEnabled, name) then
 								table.insert(entries, {Name = name, Item = item})
 							end
@@ -6488,7 +6488,7 @@ run(function()
 								local label = infolabel:Clone()
 								label.RichText = false
 								label.TextTransparency = 0
-								label:SetAttribute('NeonFadeBase_TextTransparency', nil)
+								label:SetAttribute('TenacityFadeBase_TextTransparency', nil)
 								label.TextStrokeTransparency = 1
 								label.Parent = infoholder
 								local value = label:Clone()
@@ -6609,11 +6609,11 @@ run(function()
 	infoholder.BackgroundColor3 = Color3.fromRGB(23, 26, 33)
 	infoholder.BackgroundTransparency = 0.5
 	infoholder.Parent = SessionInfo.Children
-	neon:Clean(SessionInfo.Children:GetPropertyChangedSignal('AbsolutePosition'):Connect(function()
-		if neon.ThreadFix then
+	tenacity:Clean(SessionInfo.Children:GetPropertyChangedSignal('AbsolutePosition'):Connect(function()
+		if tenacity.ThreadFix then
 			setthreadidentity(8)
 		end
-		local newside = SessionInfo.Children.AbsolutePosition.X > (neon.gui.AbsoluteSize.X / 2)
+		local newside = SessionInfo.Children.AbsolutePosition.X > (tenacity.gui.AbsoluteSize.X / 2)
 		infoholder.Position = UDim2.fromScale(newside and 1 or 0, 0)
 		infoholder.AnchorPoint = Vector2.new(newside and 1 or 0, 0)
 	end))
@@ -6647,13 +6647,13 @@ run(function()
 	sessionTitle.Parent = infoholder
 	customLabel = infolabel:Clone()
 	customLabel.Parent = infoholder
-	neon:StyleHUDCard(infoholder)
+	tenacity:StyleHUDCard(infoholder)
 	infostroke = Instance.new('UIStroke')
 	infostroke.Enabled = false
 	infostroke.Color = Color3.fromHSV(0.44, 1, 1)
 	infostroke.Parent = infoholder
 	addBlur(infoholder)
-	neon.Libraries.sessioninfo = {
+	tenacity.Libraries.sessioninfo = {
 		Objects = {},
 		AddItem = function(self, name, startvalue, func, saved)
 			func, saved = func or function(val) return val end, saved == nil or saved
@@ -6668,7 +6668,7 @@ run(function()
 			}
 		end
 	}
-	neon.Libraries.sessioninfo:AddItem('Time Played', os.clock(), function(value)
+	tenacity.Libraries.sessioninfo:AddItem('Time Played', os.clock(), function(value)
 		return os.date('!%X', math.floor(os.clock() - value))
 	end)
 end)
@@ -6717,7 +6717,7 @@ run(function()
 	
 	Spotify = client.UI:Overlay({
 		Name = 'Spotify',
-		Icon = getneonasset('neon/assets/new/spotify.png'),
+		Icon = gettenacityasset('tenacity/assets/new/spotify.png'),
 		Size = UDim2.fromOffset(16, 16),
 		Position = UDim2.fromOffset(12, 13),
 		Function = function(callback)
@@ -6812,8 +6812,8 @@ run(function()
 	duration.TextSize = 11
 	duration.TextXAlignment = Enum.TextXAlignment.Right
 	duration.Parent = holder
-	neon:StyleHUDCard(holder)
-	neon:RegisterHUDAccent(fill)
+	tenacity:StyleHUDCard(holder)
+	tenacity:RegisterHUDAccent(fill)
 	local playbackStatus = title:Clone()
 	playbackStatus.Name = 'PlaybackStatus'
 	playbackStatus.Position = UDim2.fromOffset(16, 14)
@@ -7231,17 +7231,17 @@ run(function()
 		end
 	
 		function SpotifyHandler:Start()
-			if not isfile('neon/profiles/spotify.txt') then
+			if not isfile('tenacity/profiles/spotify.txt') then
 				notif('Spotify', 'Missing cookie! (dump sp_dc from the browser and write to profiles/spotify.txt)', 30, 'warning')
 				return
 			end
 	
 			self.Headers = {
-				Cookie = 'sp_dc='..readfile('neon/profiles/spotify.txt')..';',
+				Cookie = 'sp_dc='..readfile('tenacity/profiles/spotify.txt')..';',
 				['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:154.0) Gecko/20100101 Firefox/154.0'
 			}
 	
-			local data = isfile('neon/profiles/spotifydata.txt') and httpService:JSONDecode(readfile('neon/profiles/spotifydata.txt')) or {expireTime = 0}
+			local data = isfile('tenacity/profiles/spotifydata.txt') and httpService:JSONDecode(readfile('tenacity/profiles/spotifydata.txt')) or {expireTime = 0}
 			if data.expireTime > os.time() then
 				self.Data = data
 			else
@@ -7254,7 +7254,7 @@ run(function()
 	
 				if success then
 					notif('Spotify', 'Logged in!', 10, 'info')
-					writefile('neon/profiles/spotifydata.txt', httpService:JSONEncode(data))
+					writefile('tenacity/profiles/spotifydata.txt', httpService:JSONEncode(data))
 					self.Data = data
 				else
 					notif('Spotify', data, 10, 'alert')
@@ -7335,8 +7335,8 @@ run(function()
 		if not Targets.Players.Enabled and ent.Player then return end
 		if not Targets.NPCs.Enabled and ent.NPC then return end
 		if Teammates.Enabled and (not ent.Targetable) and (not ent.Friend) then return end
-		if neon.ThreadFix then setthreadidentity(8) end
-		local col = entitylib.getEntityColor(ent) or (krsrender:IsMode(Mode.Value) and neonVisualColor(0.18) or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value))
+		if tenacity.ThreadFix then setthreadidentity(8) end
+		local col = entitylib.getEntityColor(ent) or (krsrender:IsMode(Mode.Value) and tenacityVisualColor(0.18) or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value))
 		local opacity = 1 - Transparency.Value
 		local core = Drawing.new('Line')
 		core.Thickness = krsrender:IsMode(Mode.Value) and 1.15 or 1
@@ -7358,7 +7358,7 @@ run(function()
 	local function Removed(ent)
 		local data = Reference[ent]
 		if data then
-			if neon.ThreadFix then setthreadidentity(8) end
+			if tenacity.ThreadFix then setthreadidentity(8) end
 			Reference[ent] = nil
 			for _, obj in data do pcall(function() obj.Visible = false; obj:Remove() end) end
 		end
@@ -7368,13 +7368,13 @@ run(function()
 		if DistanceColor.Enabled then return end
 		local col = Color3.fromHSV(hue, sat, val)
 		for ent, data in Reference do
-			local fallback = krsrender:IsMode(Mode.Value) and neonVisualColor(0.18) or col
+			local fallback = krsrender:IsMode(Mode.Value) and tenacityVisualColor(0.18) or col
 			setLineColor(data, entitylib.getEntityColor(ent) or fallback)
 		end
 	end
 
 	local function Loop()
-		local screenSize = neon.gui.AbsoluteSize
+		local screenSize = tenacity.gui.AbsoluteSize
 		local startVector = StartPosition.Value == 'Mouse' and inputService:GetMouseLocation() or Vector2.new(screenSize.X / 2, (StartPosition.Value == 'Middle' and screenSize.Y / 2 or screenSize.Y))
 		for ent, data in Reference do
 			local distance = entitylib.isAlive and (entitylib.character.RootPart.Position - ent.RootPart.Position).Magnitude
@@ -7407,7 +7407,7 @@ run(function()
 				Tracers:Clean(entitylib.Events.EntityRemoved:Connect(Removed))
 				for _, ent in entitylib.List do if Reference[ent] then Removed(ent) end; Added(ent) end
 				Tracers:Clean(entitylib.Events.EntityAdded:Connect(function(ent) if Reference[ent] then Removed(ent) end; Added(ent) end))
-				Tracers:Clean(neon.Categories.Friends.ColorUpdate.Event:Connect(function() ColorFunc(Color.Hue, Color.Sat, Color.Value) end))
+				Tracers:Clean(tenacity.Categories.Friends.ColorUpdate.Event:Connect(function() ColorFunc(Color.Hue, Color.Sat, Color.Value) end))
 				Tracers:Clean(runService.RenderStepped:Connect(Loop))
 			else
 				for ent in Reference do Removed(ent) end
@@ -7447,23 +7447,23 @@ run(function()
 	local Background
 	local Stroke
 	WaypointFolder = Instance.new('Folder')
-	WaypointFolder.Parent = neon.holder
+	WaypointFolder.Parent = tenacity.holder
 
 	local function buildWaypoint(data)
 		local split = data:split('/')
 		local text = split[2]
 		local tagSize = getfontbounds(removeTags(text), 14 * Scale.Value, FontOption.Value, Vector2.new(100000, 100000))
-		local neonStyle = krsrender:IsMode(Mode.Value)
+		local tenacityStyle = krsrender:IsMode(Mode.Value)
 		local billboard = Instance.new('BillboardGui')
 		billboard.Name = 'Waypoint'
 		billboard.AlwaysOnTop = true
-		billboard.Size = neonStyle and UDim2.fromOffset(tagSize.X + 34, tagSize.Y + 18) or UDim2.fromOffset(tagSize.X + 8, tagSize.Y + 7)
+		billboard.Size = tenacityStyle and UDim2.fromOffset(tagSize.X + 34, tagSize.Y + 18) or UDim2.fromOffset(tagSize.X + 8, tagSize.Y + 7)
 		billboard.StudsOffsetWorldSpace = Vector3.new(unpack(split[1]:split(',')))
 		billboard.Parent = WaypointFolder
-		local col = neonStyle and neonVisualColor(0.20) or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value)
-		if neonStyle then
+		local col = tenacityStyle and tenacityVisualColor(0.20) or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value)
+		if tenacityStyle then
 			local card = Instance.new('Frame')
-			card.Name = 'NeonCard'
+			card.Name = 'TenacityCard'
 			card.Size = UDim2.fromScale(1, 1)
 			card.BackgroundColor3 = krsrender.Palette.Surface
 			card.BackgroundTransparency = Background.Value
@@ -7502,9 +7502,9 @@ run(function()
 	Color = Waypoints:Setting({Type='color', 
 		Name = 'Color',
 		Function = function(hue, sat, val)
-			local col = krsrender:IsMode(Mode.Value) and neonVisualColor(0.20) or Color3.fromHSV(hue, sat, val)
+			local col = krsrender:IsMode(Mode.Value) and tenacityVisualColor(0.20) or Color3.fromHSV(hue, sat, val)
 			for _, billboard in WaypointFolder:GetChildren() do
-				local card = billboard:FindFirstChild('NeonCard')
+				local card = billboard:FindFirstChild('TenacityCard')
 				if card then
 					card.TextLabel.TextColor3 = krsrender.Palette.Text; card.Dot.BackgroundColor3 = col; card.Glow.Color = krsrender.Palette.Border; card.Edge.Color = krsrender.Palette.Border
 				elseif billboard:FindFirstChild('TextLabel') then billboard.TextLabel.TextColor3 = col end
@@ -7866,7 +7866,7 @@ run(function()
 		Name = 'Panic',
 		Function = function(callback)
 			if callback then
-				for _, module in neon.Modules do
+				for _, module in tenacity.Modules do
 					if module.Enabled then
 						module:Toggle()
 					end
@@ -7920,10 +7920,10 @@ run(function()
 	ServerHop:Setting({Type='button', 
 		Name = 'Rejoin Previous Server',
 		Function = function()
-			notif('ServerHop', shared.NeonServerHopPrevious and 'Rejoining previous server...' or 'Cannot find previous server', 5)
+			notif('ServerHop', shared.TenacityServerHopPrevious and 'Rejoining previous server...' or 'Cannot find previous server', 5)
 	
-			if shared.NeonServerHopPrevious then
-				teleportService:TeleportToPlaceInstance(game.PlaceId, shared.NeonServerHopPrevious)
+			if shared.TenacityServerHopPrevious then
+				teleportService:TeleportToPlaceInstance(game.PlaceId, shared.TenacityServerHopPrevious)
 			end
 		end
 	})
@@ -7960,8 +7960,8 @@ run(function()
 	end
 	
 	local function playerAdded(plr)
-		if not neon.Loaded then
-			repeat task.wait() until neon.Loaded
+		if not tenacity.Loaded then
+			repeat task.wait() until tenacity.Loaded
 		end
 	
 		local user = table.find(Users.ListEnabled, tostring(plr.UserId))
@@ -7971,7 +7971,7 @@ run(function()
 	
 			if Mode.Value == 'Uninject' then
 				task.spawn(function()
-					neon:Uninject()
+					tenacity:Uninject()
 				end)
 	
 				game:GetService('StarterGui'):SetCore('SendNotification', {
@@ -7982,14 +7982,14 @@ run(function()
 			elseif Mode.Value == 'ServerHop' then
 				serverHop()
 			elseif Mode.Value == 'Profile' then
-				neon.Save = function() end
-				if neon.Profile ~= Profile.Value then
-					neon.Profile = Profile.Value
-					neon:Load(true, Profile.Value)
+				tenacity.Save = function() end
+				if tenacity.Profile ~= Profile.Value then
+					tenacity.Profile = Profile.Value
+					tenacity:Load(true, Profile.Value)
 				end
 			elseif Mode.Value == 'AutoConfig' then
-				neon.Save = function() end
-				for _, module in neon.Modules do
+				tenacity.Save = function() end
+				for _, module in tenacity.Modules do
 					if module.Enabled then
 						module:Toggle()
 					end
@@ -8446,9 +8446,9 @@ run(function()
 	
 				entitylib.getEntityColor = function(ent)
 					ent = ent.Player
-					if not (ent and neon.Settings.Modules.Options['Use team color'].Enabled) then return end
+					if not (ent and tenacity.Settings.Modules.Options['Use team color'].Enabled) then return end
 					if isFriend(ent, true) then
-						return Color3.fromHSV(neon.Categories.Friends.Options['Friends color'].Hue, neon.Categories.Friends.Options['Friends color'].Sat, neon.Categories.Friends.Options['Friends color'].Value)
+						return Color3.fromHSV(tenacity.Categories.Friends.Options['Friends color'].Hue, tenacity.Categories.Friends.Options['Friends color'].Sat, tenacity.Categories.Friends.Options['Friends color'].Value)
 					end
 					return murderer == ent and Color3.new(1, 0.3, 0.3) or sheriff == ent and Color3.new(0, 0.5, 1) or nil
 				end
@@ -8823,7 +8823,7 @@ run(function()
 	local function updateTrailColor()
 		if not trail then return end
 		if ThemeColor and ThemeColor.Enabled then
-			trail.Color = neonVisualSequence(0.02)
+			trail.Color = tenacityVisualSequence(0.02)
 		else
 			trail.Color = ColorSequence.new(
 				Color3.fromHSV(FadeIn.Hue, FadeIn.Sat, FadeIn.Value),
@@ -8937,10 +8937,10 @@ run(function()
 				part.CastShadow = false
 				part.Parent = gameCamera
 				capeHighlight = Instance.new('Highlight')
-				capeHighlight.Name = 'NeonCapeOutline'
+				capeHighlight.Name = 'TenacityCapeOutline'
 				capeHighlight.Adornee = part
 				capeHighlight.FillTransparency = 1
-				capeHighlight.OutlineColor = neonVisualColor(0.16)
+				capeHighlight.OutlineColor = tenacityVisualColor(0.16)
 				capeHighlight.OutlineTransparency = 0.28
 				capeHighlight.DepthMode = Enum.HighlightDepthMode.Occluded
 				capeHighlight.Parent = part
@@ -9004,13 +9004,13 @@ run(function()
 		if not hat then return end
 
 		if ThemeColor and ThemeColor.Enabled then
-			hat.Color = neon:GetGUIColorRGB()
-			if neon.HUDAccentObjects then
-				neon:RegisterHUDAccent(hat, 'Color')
+			hat.Color = tenacity:GetGUIColorRGB()
+			if tenacity.HUDAccentObjects then
+				tenacity:RegisterHUDAccent(hat, 'Color')
 			end
 		else
-			if neon.HUDAccentObjects then
-				neon.HUDAccentObjects[hat] = nil
+			if tenacity.HUDAccentObjects then
+				tenacity.HUDAccentObjects[hat] = nil
 			end
 			hat.Color = Color3.fromHSV(Color.Hue, Color.Sat, Color.Value)
 		end
@@ -9020,7 +9020,7 @@ run(function()
 		Name = 'China Hat',
 		Function = function(callback)
 			if callback then
-				if neon.ThreadFix then
+				if tenacity.ThreadFix then
 					setthreadidentity(8)
 				end
 	
@@ -9060,8 +9060,8 @@ run(function()
 					hat.LocalTransparencyModifier = ((gameCamera.CFrame.Position - gameCamera.Focus.Position).Magnitude <= 0.6 and 1 or 0)
 				end))
 			else
-				if hat and neon.HUDAccentObjects then
-					neon.HUDAccentObjects[hat] = nil
+				if hat and tenacity.HUDAccentObjects then
+					tenacity.HUDAccentObjects[hat] = nil
 				end
 				hat = nil
 			end
@@ -9120,7 +9120,7 @@ run(function()
 	local segments = {}
 
 	local function currentColor()
-		return ColorMode and ColorMode.Value == 'Sync' and neon:GetGUIColorRGB() or Color3.fromHSV(WingColor.Hue, WingColor.Sat, WingColor.Value)
+		return ColorMode and ColorMode.Value == 'Sync' and tenacity:GetGUIColorRGB() or Color3.fromHSV(WingColor.Hue, WingColor.Sat, WingColor.Value)
 	end
 
 	local function updateWingStyle()
@@ -9174,7 +9174,7 @@ run(function()
 	local function createWings()
 		clearWings()
 		wingFolder = Instance.new('Folder')
-		wingFolder.Name = 'NeonWings'
+		wingFolder.Name = 'TenacityWings'
 		wingFolder.Parent = gameCamera
 		DragonWings:Clean(wingFolder)
 		for side = -1, 1, 2 do
@@ -9281,7 +9281,7 @@ run(function()
 	label.TextColor3 = Color3.new(1, 1, 1)
 	label.BackgroundColor3 = Color3.fromRGB(23, 26, 33)
 	label.Parent = Clock.Children
-	styleNeonMetric(label, 'Clock')
+	styleTenacityMetric(label, 'Clock')
 end)
 
 run(function()
@@ -9514,7 +9514,7 @@ run(function()
 	label.TextColor3 = Color3.new(1, 1, 1)
 	label.BackgroundColor3 = Color3.fromRGB(23, 26, 33)
 	label.Parent = FPS.Children
-	styleNeonMetric(label, 'FPS')
+	styleTenacityMetric(label, 'FPS')
 end)
 
 run(function()
@@ -9550,14 +9550,14 @@ run(function()
 		local corner = Instance.new('UICorner')
 		corner.CornerRadius = UDim.new(0, 7)
 		corner.Parent = key
-		neon:StyleHUDCard(key)
-		local keyStroke = key:FindFirstChild('NeonKeyStroke') or Instance.new('UIStroke')
-		keyStroke.Name = 'NeonKeyStroke'
+		tenacity:StyleHUDCard(key)
+		local keyStroke = key:FindFirstChild('TenacityKeyStroke') or Instance.new('UIStroke')
+		keyStroke.Name = 'TenacityKeyStroke'
 		keyStroke.Thickness = 1
 		keyStroke.Transparency = 0.45
 		keyStroke.Parent = key
-		neon:RegisterHUDAccent(keyStroke, 'Color')
-		addNeonVisualAccent(key, 0.08)
+		tenacity:RegisterHUDAccent(keyStroke, 'Color')
+		addTenacityVisualAccent(key, 0.08)
 	
 		keys[keybutton] = {Key = key}
 	end
@@ -9576,11 +9576,11 @@ run(function()
 			local pressed = inputType.UserInputState == Enum.UserInputState.Begin
 			key.Pressed = pressed
 			key.Tween = tweenService:Create(key.Key, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-				BackgroundColor3 = pressed and neon:GetGUIColorRGB() or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value),
+				BackgroundColor3 = pressed and tenacity:GetGUIColorRGB() or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value),
 				BackgroundTransparency = pressed and 0 or 1 - Color.Opacity
 			})
 			key.Tween2 = tweenService:Create(key.Key.TextLabel, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-				TextColor3 = pressed and (select(3, neon:GetGUIColorRGB():ToHSV()) > 0.7 and Color3.new(0.08, 0.08, 0.08) or Color3.new(1, 1, 1)) or Color3.new(1, 1, 1)
+				TextColor3 = pressed and (select(3, tenacity:GetGUIColorRGB():ToHSV()) > 0.7 and Color3.new(0.08, 0.08, 0.08) or Color3.new(1, 1, 1)) or Color3.new(1, 1, 1)
 			})
 			key.Tween:Play()
 			key.Tween2:Play()
@@ -9688,7 +9688,7 @@ run(function()
 	label.TextColor3 = Color3.new(1, 1, 1)
 	label.BackgroundColor3 = Color3.fromRGB(23, 26, 33)
 	label.Parent = Memory.Children
-	styleNeonMetric(label, 'Memory')
+	styleTenacityMetric(label, 'Memory')
 end)
 
 run(function()
@@ -9739,7 +9739,7 @@ run(function()
 	label.TextColor3 = Color3.new(1, 1, 1)
 	label.BackgroundColor3 = Color3.fromRGB(23, 26, 33)
 	label.Parent = Ping.Children
-	styleNeonMetric(label, 'Ping')
+	styleTenacityMetric(label, 'Ping')
 end)
 
 run(function()
@@ -9920,7 +9920,7 @@ run(function()
 	label.TextColor3 = Color3.new(1, 1, 1)
 	label.BackgroundColor3 = Color3.fromRGB(23, 26, 33)
 	label.Parent = Speedmeter.Children
-	styleNeonMetric(label, 'Speed')
+	styleTenacityMetric(label, 'Speed')
 end)
 
 run(function()

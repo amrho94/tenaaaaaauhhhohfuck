@@ -1,11 +1,20 @@
 {
-  "name": "Neon",
+  "name": "Tenacity",
   "version": "1.1.0",
-  "build": "neon-tenacity-ui-r1",
+  "build": "tenacity-ui-r2",
   "repository": "amrho94/tenaaaaaauhhhohfuck",
   "branch": "main",
   "entrypoint": "loader.lua",
-  "cacheRoot": "neon/",
+  "cacheRoot": "tenacity/",
   "apiVersion": 3,
-  "categories": ["Offense", "Motion", "Player", "World", "Vision", "Utility", "Scripts", "Developer"]
+  "categories": [
+    "Offense",
+    "Motion",
+    "Player",
+    "World",
+    "Vision",
+    "Utility",
+    "Scripts",
+    "Developer"
+  ]
 }

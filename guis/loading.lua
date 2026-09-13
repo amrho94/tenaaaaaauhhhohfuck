@@ -1,4 +1,4 @@
--- Neon startup experience.
+-- Tenacity startup experience.
 -- Reworked presentation; keeps the shipped splashscreen.png background.
 local TweenService = game:GetService('TweenService')
 local Players = game:GetService('Players')
@@ -23,8 +23,8 @@ end
 
 local function asset(name)
     if not getcustomasset then return '' end
-    local path = 'neon/assets/neon/'..name
-    local runtime = shared.NeonRuntime
+    local path = 'tenacity/assets/tenacity/'..name
+    local runtime = shared.TenacityRuntime
 
     if runtime then
         local ok, value = pcall(runtime.Read, path, getcustomasset)
@@ -47,7 +47,7 @@ local function loadFont(assetName, familyName, weight)
     local fontAsset = asset(assetName)
     if fontAsset == '' then return nil end
 
-    local jsonPath = 'neon/assets/'..familyName..'.font.json'
+    local jsonPath = 'tenacity/assets/'..familyName..'.font.json'
     local ok = pcall(writefile, jsonPath, HttpService:JSONEncode({
         name = familyName,
         faces = {{
@@ -96,7 +96,7 @@ end
 
 function screen:SetTheme()
     -- Loader intentionally owns its presentation so startup is stable even
-    -- before the main Neon theme system has finished initializing.
+    -- before the main Tenacity theme system has finished initializing.
 end
 
 function screen:WaitForMinimumDisplay()
@@ -158,8 +158,8 @@ function screen:HideLoadingScreen(immediate)
     if not gui then return end
 
     self.LoadingScreen = nil
-    if shared.NeonLoading == self then
-        shared.NeonLoading = nil
+    if shared.TenacityLoading == self then
+        shared.TenacityLoading = nil
     end
 
     if immediate then
@@ -190,18 +190,18 @@ function screen:ShowLoadingScreen()
     self:HideLoadingScreen(true)
 
     local parent = Players.LocalPlayer:WaitForChild('PlayerGui')
-    local old = parent:FindFirstChild('NeonLoadingScreen')
+    local old = parent:FindFirstChild('TenacityLoadingScreen')
     if old then old:Destroy() end
 
     self.Started = os.clock()
     self.Value = 0
-    self.TitleFont = loadFont('tenacity-bold.ttf', 'NeonLoaderBold', 700)
+    self.TitleFont = loadFont('tenacity-bold.ttf', 'TenacityLoaderBold', 700)
         or Font.fromEnum(Enum.Font.GothamBold)
-    self.BodyFont = loadFont('tenacity.ttf', 'NeonLoaderRegular', 400)
+    self.BodyFont = loadFont('tenacity.ttf', 'TenacityLoaderRegular', 400)
         or Font.fromEnum(Enum.Font.Gotham)
 
     local gui = create('ScreenGui', parent, {
-        Name = 'NeonLoadingScreen',
+        Name = 'TenacityLoadingScreen',
         ResetOnSpawn = false,
         IgnoreGuiInset = true,
         DisplayOrder = 1000000,
@@ -209,7 +209,7 @@ function screen:ShowLoadingScreen()
     })
 
     self.LoadingScreen = gui
-    shared.NeonLoading = self
+    shared.TenacityLoading = self
 
     local root = create('CanvasGroup', gui, {
         Name = 'Experience',
@@ -347,7 +347,7 @@ function screen:ShowLoadingScreen()
         BackgroundTransparency = 1,
         Position = UDim2.fromOffset(18, 207),
         Size = UDim2.new(1, -36, 0, 24),
-        Text = 'Starting Neon',
+        Text = 'Starting Tenacity',
         TextColor3 = Color3.fromRGB(232, 233, 239),
         TextSize = 15,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -473,8 +473,8 @@ function screen:ShowLoadingScreen()
         if self.LoadingScreen == gui then
             self.LoadingScreen = nil
         end
-        if shared.NeonLoading == self then
-            shared.NeonLoading = nil
+        if shared.TenacityLoading == self then
+            shared.TenacityLoading = nil
         end
     end)
 end
@@ -482,7 +482,7 @@ end
 local ok, err = pcall(screen.ShowLoadingScreen, screen)
 if not ok then
     screen:HideLoadingScreen(true)
-    warn('[Neon] Loading UI unavailable: '..tostring(err))
+    warn('[Tenacity] Loading UI unavailable: '..tostring(err))
 end
 
 return screen

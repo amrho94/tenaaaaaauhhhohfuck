@@ -1,7 +1,7 @@
 local loadstring = function(...)
 	local res, err = loadstring(...)
-	if err and neon then
-		neon:CreateNotification('Neon', 'Failed to load : '..err, 30, 'alert')
+	if err and tenacity then
+		tenacity:CreateNotification('Tenacity', 'Failed to load : '..err, 30, 'alert')
 	end
 	return res
 end
@@ -11,7 +11,7 @@ local isfile = isfile or function(file)
 	end)
 	return suc and res ~= nil and res ~= ''
 end
-local REPO_RAW = ('https://raw.githubusercontent.com/%s/%s/'):format(shared.NeonRepository or 'amrho94/tenaaaaaauhhhohfuck', shared.NeonBranch or 'main')
+local REPO_RAW = ('https://raw.githubusercontent.com/%s/%s/'):format(shared.TenacityRepository or 'amrho94/tenaaaaaauhhhohfuck', shared.TenacityBranch or 'main')
 
 local function invalidDownload(data, path)
 	if type(data) ~= 'string' or data == '' then return true end
@@ -36,9 +36,9 @@ local function validCachedFile(path)
 end
 
 local function downloadFile(path, func)
-	if shared.NeonRuntime then return shared.NeonRuntime.Read(path, func) end
+	if shared.TenacityRuntime then return shared.TenacityRuntime.Read(path, func) end
 	if not validCachedFile(path) then
-		local remotePath = select(1, path:gsub('neon/', ''))
+		local remotePath = select(1, path:gsub('tenacity/', ''))
 		local suc, res = pcall(function()
 			return game:HttpGet(REPO_RAW..remotePath, true)
 		end)
@@ -46,7 +46,7 @@ local function downloadFile(path, func)
 			error('Failed to download '..remotePath..' from GitHub: '..tostring(res), 2)
 		end
 		if path:find('.lua', 1, true) then
-			res = '--Neon cached source file.\n'..res
+			res = '--Tenacity cached source file.\n'..res
 		end
 		writefile(path, res)
 	end
@@ -68,34 +68,34 @@ local debrisService = cloneref(game:GetService('Debris'))
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
 
-local neon = shared.Neon
-local client = assert(neon.API or shared.NeonAPI, 'Neon API is unavailable')
-local impactVisuals = assert(loadstring(downloadFile('neon/libraries/frontlines-effects.lua'), 'Frontlines effects'))()(neon)
-local krsrender = neon.Libraries.krsrender
-	 or assert(loadstring(downloadFile('neon/libraries/krs-render.lua'), 'Krs render'))()(neon)
-local entitylib = neon.Libraries.entity
-local whitelist = neon.Libraries.whitelist
-local prediction = neon.Libraries.prediction
-local targetinfo = neon.Libraries.targetinfo
-local sessioninfo = neon.Libraries.sessioninfo
-local getneonasset = neon.Libraries.getneonasset
-local drawingactor = loadstring(downloadFile('neon/libraries/drawing.lua'), 'drawing')(...)
+local tenacity = shared.Tenacity
+local client = assert(tenacity.API or shared.TenacityAPI, 'Tenacity API is unavailable')
+local impactVisuals = assert(loadstring(downloadFile('tenacity/libraries/frontlines-effects.lua'), 'Frontlines effects'))()(tenacity)
+local krsrender = tenacity.Libraries.krsrender
+	 or assert(loadstring(downloadFile('tenacity/libraries/krs-render.lua'), 'Krs render'))()(tenacity)
+local entitylib = tenacity.Libraries.entity
+local whitelist = tenacity.Libraries.whitelist
+local prediction = tenacity.Libraries.prediction
+local targetinfo = tenacity.Libraries.targetinfo
+local sessioninfo = tenacity.Libraries.sessioninfo
+local gettenacityasset = tenacity.Libraries.gettenacityasset
+local drawingactor = loadstring(downloadFile('tenacity/libraries/drawing.lua'), 'drawing')(...)
 local function notif(...)
 	return client:Notify(...)
 end
 
 if not select(1, ...) and game.PlaceId == 5938036553 then
 	if run_on_actor and getactors then
-		local oldreload = shared.NeonReload
-		neon.Load = function()
+		local oldreload = shared.TenacityReload
+		tenacity.Load = function()
 			task.delay(0.1, function()
-				neon:Uninject()
+				tenacity:Uninject()
 			end)
 		end
 
 		task.spawn(function()
-			repeat task.wait() until not shared.Neon
-			local executionString = "loadfile('neon/main.lua')("..drawingactor..")"
+			repeat task.wait() until not shared.Tenacity
+			local executionString = "loadfile('tenacity/main.lua')("..drawingactor..")"
 			for i, v in shared do
 				if type(v) == 'string' then
 					executionString = string.format("shared.%s = '%s'", i, v)..'\n'..executionString
@@ -104,7 +104,7 @@ if not select(1, ...) and game.PlaceId == 5938036553 then
 				end
 			end
 			if oldreload then
-				executionString = 'shared.NeonReload = true\n'..executionString
+				executionString = 'shared.TenacityReload = true\n'..executionString
 			end
 
 			for i, v in getactors() do
@@ -113,11 +113,11 @@ if not select(1, ...) and game.PlaceId == 5938036553 then
 					return
 				end
 			end
-			notif('Neon', 'Failed to find actor', 10, 'alert')
+			notif('Tenacity', 'Failed to find actor', 10, 'alert')
 		end)
 	else
-		neon.Load = function()
-			notif('Neon', 'Missing actor functions.', 10, 'alert')
+		tenacity.Load = function()
+			notif('Tenacity', 'Missing actor functions.', 10, 'alert')
 		end
 	end
 
@@ -162,17 +162,17 @@ local function hookEvent(id, rfunc)
 	end)
 
 	if not suc then
-		notif('Neon', 'Failed to hook ('..id..')', 10, 'alert')
+		notif('Tenacity', 'Failed to hook ('..id..')', 10, 'alert')
 	end
 
 	return type(res) == 'function' and res or function() end
 end
 
 local function isFriend(plr, recolor)
-	if neon.Categories.Friends.Options['Use friends'].Enabled then
-		local friend = table.find(neon.Categories.Friends.ListEnabled, plr.Name) and true
+	if tenacity.Categories.Friends.Options['Use friends'].Enabled then
+		local friend = table.find(tenacity.Categories.Friends.ListEnabled, plr.Name) and true
 		if recolor then
-			friend = friend and neon.Categories.Friends.Options['Recolor visuals'].Enabled
+			friend = friend and tenacity.Categories.Friends.Options['Recolor visuals'].Enabled
 		end
 		return friend
 	end
@@ -209,8 +209,8 @@ run(function()
 		else
 			break
 		end
-	until neon.Loaded == nil
-	if neon.Loaded == nil then return end
+	until tenacity.Loaded == nil
+	if tenacity.Loaded == nil then return end
 	frontlines.Events = debug.getupvalue(frontlines.Main.append_exe_set, 1)
 	frontlines.PickupBit = debug.getupvalue(frontlines.Events[frontlines.Main.exe_func_t.INIT_FPV_SOL_AMMO_PICKUP], 5)
 
@@ -277,8 +277,8 @@ run(function()
 	end)
 
 
-	neon:Clean(Drawing.kill or function() end)
-	neon:Clean(function()
+	tenacity:Clean(Drawing.kill or function() end)
+	tenacity:Clean(function()
 		if frontlines.KillEffectEvent then frontlines.KillEffectEvent:Destroy() end
 		if frontlines.LocalBulletEvent then frontlines.LocalBulletEvent:Destroy() end
 		if frontlines.LocalHitEvent then frontlines.LocalHitEvent:Destroy() end
@@ -289,7 +289,7 @@ run(function()
 		table.clear(frontlines)
 	end)
 end)
-if neon.Loaded == nil then return end
+if tenacity.Loaded == nil then return end
 
 run(function()
 	entitylib.Wallcheck = function(origin, position, ignoreobject)
@@ -307,9 +307,9 @@ run(function()
 	end
 
 	entitylib.getEntityColor = function(ent)
-		if not (ent.Player and neon.Settings.Modules.Options['Use team color'].Enabled) then return end
+		if not (ent.Player and tenacity.Settings.Modules.Options['Use team color'].Enabled) then return end
 		if isFriend(ent.Player, true) then
-			return Color3.fromHSV(neon.Categories.Friends.Options['Friends color'].Hue, neon.Categories.Friends.Options['Friends color'].Sat, neon.Categories.Friends.Options['Friends color'].Value)
+			return Color3.fromHSV(tenacity.Categories.Friends.Options['Friends color'].Hue, tenacity.Categories.Friends.Options['Friends color'].Sat, tenacity.Categories.Friends.Options['Friends color'].Value)
 		end
 		return getTeam({Id = frontlines.Main.globals.cli_state.id}) == getTeam(ent) and Color3.fromRGB(67, 140, 229) or Color3.fromRGB(234, 50, 50)
 	end
@@ -508,11 +508,11 @@ end
 entitylib.start()
 
 for i, v in {'Reach', 'Health', 'TriggerBot', 'AntiFall', 'AntiRagdoll', 'Invisible', 'Disabler', 'Freecam', 'Parkour', 'HitBoxes', 'SafeWalk', 'Spider', 'Swim', 'GamingChair', 'Timer', 'MurderMystery', 'Blink', 'AnimationPlayer'} do
-	neon:Remove(v)
+	tenacity:Remove(v)
 end
 
 run(function()
-	neon.Modules.Speed:AddMode('Legit', function(options, moveDirection, dt)
+	tenacity.Modules.Speed:AddMode('Legit', function(options, moveDirection, dt)
 		local root = entitylib.character.RootPart
 		local direction = moveDirection * Vector3.new(1, 0, 1)
 		local magnitude = direction.Magnitude
@@ -1350,7 +1350,7 @@ run(function()
 											frontlines.Main.globals.ctrl_states.trigger = true
 											frontlines.Main.globals.ctrl_ts.trigger = time()
 											frontlines.Main.exe_set(frontlines.Main.exe_set_t.FPV_SOL_MELEE_SOL_HIT, gun, part, Vector3.zero)
-											if neon.ThreadFix then
+											if tenacity.ThreadFix then
 												setthreadidentity(8)
 											end
 										end
@@ -1436,7 +1436,7 @@ run(function()
 					box.Size = Vector3.new(3, 5, 3)
 					box.CFrame = CFrame.new(0, -0.5, 0)
 					box.ZIndex = 0
-					box.Parent = neon.holder
+					box.Parent = tenacity.holder
 					Boxes[i] = box
 				end
 			else
@@ -1853,7 +1853,7 @@ run(function()
 	CustomTime = RTXShaders:Setting({Type='toggle', Name='Custom Time',Default=false,Function=changed})
 	Time = RTXShaders:Setting({Type='slider', Name='Time',Min=0,Max=24,Default=15,Decimal=10,Function=changed})
 	ready = true
-	neon:Clean(function() restore(); holding:Destroy() end)
+	tenacity:Clean(function() restore(); holding:Destroy() end)
 end)
 
 run(function()
@@ -1862,7 +1862,7 @@ run(function()
 	local Yaw
 	local Pitch
 	local spinYaw = 0
-	local renderName = 'NeonFrontlinesSpinBotVisual'
+	local renderName = 'TenacityFrontlinesSpinBotVisual'
 	local currentBone
 	local originalBoneCFrame
 
@@ -2005,7 +2005,7 @@ run(function()
 		local equipment = globals and globals.fpv_sol_equipment
 		local gun = equipment and equipment.curr_equipment
 		if not state or state.state ~= main.cli_state_t.COMBAT or not gun or gun.type == 2 or not gun.reload_params then return end
-		if neon.Modules.ThirdPerson and neon.Modules.ThirdPerson.Enabled then return end
+		if tenacity.Modules.ThirdPerson and tenacity.Modules.ThirdPerson.Enabled then return end
 		if AimReset.Enabled and inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then return end
 		local camera = workspace.CurrentCamera
 		local candidate = workspace:FindFirstChild('Model')
@@ -2544,7 +2544,7 @@ run(function()
 
 	optionsReady = true
 
-	neon:Clean(function()
+	tenacity:Clean(function()
 		restoreAll()
 	end)
 end)
@@ -2576,7 +2576,7 @@ run(function()
 	local hiddenParts = {}
 
 	local folder = Instance.new('Folder')
-	folder.Name = 'NeonCustomKnife'
+	folder.Name = 'TenacityCustomKnife'
 	folder.Parent = gameCamera
 
 	local function value(option, fallback)
@@ -2866,7 +2866,7 @@ run(function()
 		end
 
 		visual = template:Clone()
-		visual.Name = 'NeonCustomKnifeModel'
+		visual.Name = 'TenacityCustomKnifeModel'
 		visual.Parent = folder
 	end
 
@@ -3134,7 +3134,7 @@ run(function()
 				end
 
 				lastTargetScan = 0
-				local renderName = 'NeonCustomKnifeFollow'
+				local renderName = 'TenacityCustomKnifeFollow'
 				pcall(function()
 					runService:UnbindFromRenderStep(renderName)
 				end)
@@ -3203,7 +3203,7 @@ run(function()
 
 	optionsReady = true
 
-	neon:Clean(function()
+	tenacity:Clean(function()
 		destroyVisual()
 
 		if template then
@@ -3221,7 +3221,7 @@ run(function()
 	local SkyThemes
 	local Theme
 	local lightingService = cloneref(game:GetService('Lighting'))
-	local boykisserSky = getneonasset('neon/assets/new/boykesser.png')
+	local boykisserSky = gettenacityasset('tenacity/assets/new/boykesser.png')
 
 	local skyThemes = {
 			Boykisser = {
@@ -3549,8 +3549,8 @@ run(function()
 	defaultSky:Destroy()
 
 	local storedSkies = Instance.new('Folder')
-	storedSkies.Name = 'NeonStoredSkies'
-	storedSkies.Parent = neon.holder
+	storedSkies.Name = 'TenacityStoredSkies'
+	storedSkies.Parent = tenacity.holder
 
 	local activeSky
 
@@ -3568,7 +3568,7 @@ run(function()
 
 		if not activeSky or not activeSky.Parent then
 			activeSky = Instance.new('Sky')
-			activeSky.Name = 'NeonSky'
+			activeSky.Name = 'TenacitySky'
 			activeSky.Parent = lightingService
 		end
 
@@ -3637,7 +3637,7 @@ run(function()
 		end
 	})
 
-	neon:Clean(function()
+	tenacity:Clean(function()
 		restoreGameSkies()
 		pcall(function()
 			storedSkies:Destroy()
@@ -3659,7 +3659,7 @@ run(function()
 	local Trails
 
 	local Folder = Instance.new('Folder')
-	Folder.Name = 'NeonFireflies'
+	Folder.Name = 'TenacityFireflies'
 	Folder.Parent = workspace
 
 	local fireflies = {}
@@ -3980,7 +3980,7 @@ run(function()
 		end
 	})
 
-	neon:Clean(function()
+	tenacity:Clean(function()
 		for _, data in fireflies do
 			pcall(function()
 				data.Part:Destroy()
@@ -3999,7 +3999,7 @@ run(function()
 	local TAU = math.pi * 2
 	local scenes, controllers = {}, {}
 	local root = Instance.new('Folder')
-	root.Name = 'NeonEffects'
+	root.Name = 'TenacityEffects'
 	root.Parent = workspace
 	local HitStyles, KillStyles = {}, {}
 	local HitNames = {'Needlepoint', 'Glassbite', 'Redline', 'Short Circuit', 'Inkblot', 'Hard Reset',
@@ -4583,7 +4583,7 @@ run(function()
 			a = Color3.fromHSV(c.Primary.Hue, c.Primary.Sat, c.Primary.Value)
 			b = Color3.fromHSV(c.Secondary.Hue, c.Secondary.Sat, c.Secondary.Value)
 		elseif mode == 'Theme' then
-			local ok, color = pcall(function() return neon:GetGUIColorRGB() end)
+			local ok, color = pcall(function() return tenacity:GetGUIColorRGB() end)
 			if ok and typeof(color) == 'Color3' then a, b = color, color:Lerp(WHITE, 0.65) end
 		elseif mode == 'Target' then
 			local color = data.Color
@@ -4685,7 +4685,7 @@ run(function()
 		local ok, err = pcall(styles[name], s)
 		if not ok then
 			for i = #scenes, 1, -1 do if scenes[i] == s then removeScene(i); break end end
-			warn('[Neon] '..name..' effect: '..tostring(err))
+			warn('[Tenacity] '..name..' effect: '..tostring(err))
 			return
 		end
 		for _, item in ipairs(s.Items) do s.EndTime = math.max(s.EndTime, item.Start + item.Duration) end
@@ -4857,11 +4857,11 @@ run(function()
 						end
 					end
 				end)
-				if not ok then warn('[Neon] '..s.Name..' animation: '..tostring(err)); removeScene(i) end
+				if not ok then warn('[Tenacity] '..s.Name..' animation: '..tostring(err)); removeScene(i) end
 			end
 		end
 	end)
-	neon:Clean(function()
+	tenacity:Clean(function()
 		connection:Disconnect()
 		for _, c in ipairs(controllers) do c.Active = false; reset(c) end
 		root:Destroy()
@@ -4888,7 +4888,7 @@ run(function()
 	local bodyParts = {}
 	local dead = false
 	local generation = 0
-	local fakeId = '__Neon_VFX_TEST_DUMMY__'
+	local fakeId = '__Tenacity_VFX_TEST_DUMMY__'
 	local maxHealth = 100
 	local mixedStep = 0
 
@@ -5281,7 +5281,7 @@ run(function()
 		Function = function(callback) if nameGui then nameGui.Enabled = callback and not dead end end
 	})
 
-	neon:Clean(destroyDummy)
+	tenacity:Clean(destroyDummy)
 end)
 
 
@@ -5356,7 +5356,7 @@ run(function()
 
 		lastPlay = tick()
 		local sound = Instance.new('Sound')
-		sound.Name = 'NeonHeadshotSound'
+		sound.Name = 'TenacityHeadshotSound'
 		-- Register the local file to get a SoundId.
 		sound.SoundId = asset
 		sound.Volume = Volume.Value
@@ -5437,11 +5437,11 @@ run(function()
 	local Color = {}
 	local Reference = {}
 	local Folder = Instance.new('Folder')
-	Folder.Parent = neon.holder
+	Folder.Parent = tenacity.holder
 	local old
 	
 	local function addESP(v)
-		if neon.ThreadFix then
+		if tenacity.ThreadFix then
 			setthreadidentity(8)
 		end
 		if not v.model or v.model.Name ~= 'frag' then return end
@@ -5459,7 +5459,7 @@ run(function()
 		data.Status.BackgroundColor3 = col
 		Reference[v.model] = data
 		v.model.Destroying:Connect(function()
-			if neon.ThreadFix then
+			if tenacity.ThreadFix then
 				setthreadidentity(8)
 			end
 			if Reference[v.model] then
@@ -6017,8 +6017,8 @@ run(function()
 end)
 -- CuteVisuals.java port: Frontlines kills replace Minecraft bed-break packets.
 run(function()
- local createCuteVisuals = assert(loadstring(downloadFile('neon/libraries/cutevisuals.lua'), 'CuteVisuals'))()
- createCuteVisuals(neon, {
+ local createCuteVisuals = assert(loadstring(downloadFile('tenacity/libraries/cutevisuals.lua'), 'CuteVisuals'))()
+ createCuteVisuals(tenacity, {
   GetPosition = function()
    local character = entitylib.isAlive and entitylib.character
    local root = character and (character.RootPart or character.HumanoidRootPart)
@@ -6140,7 +6140,7 @@ run(function()
 			return StrafeSpeed.Value
 		end
 
-		local speedModule = neon.Modules.Speed
+		local speedModule = tenacity.Modules.Speed
 		local options = speedModule and speedModule.Options
 		if options then
 			local direct = options.Speed or options['Speed']
@@ -6428,7 +6428,7 @@ run(function()
 		Name = 'FrontlinesFly',
 		Function = function(callback)
 			if not callback then return end
-			local fly = neon.Modules.Fly
+			local fly = tenacity.Modules.Fly
 			if not fly or not fly.Options then
 				notif('FrontlinesFly', 'The Fly movement engine is unavailable.', 5, 'alert')
 				FrontlinesFly:Toggle()
@@ -6479,7 +6479,7 @@ run(function()
 			label.TextSize = 18
 			label.TextColor3 = Color3.fromRGB(240, 243, 250)
 			label.Text = 'FRONTLINES FLY — Waiting for combat'
-			label.Parent = neon.gui
+			label.Parent = tenacity.gui
 			FrontlinesFly:Clean(label)
 			local corner = Instance.new('UICorner')
 			corner.CornerRadius = UDim.new(0, 10)
@@ -6553,7 +6553,7 @@ run(function()
 		Name = 'AmmoHUD',
 		Function = function(callback)
 			if not callback then return end
-			local card = krsrender:Card(neon.gui, {
+			local card = krsrender:Card(tenacity.gui, {
 				Name = 'FrontlinesAmmoHUD', AnchorPoint = Vector2.new(0.5, 0.5),
 				Size = UDim2.fromOffset(184, 38), Position = UDim2.fromScale(0.5, VerticalPosition.Value / 100),
 				Transparency = Background.Enabled and 0.12 or 1, Offset = 0.2, Height = 38
@@ -6727,7 +6727,7 @@ run(function()
 		Name = 'Bot',
 		Function = function(callback)
 			if not callback then return end
-			local aura, aim = neon.Modules.Killaura, neon.Modules.SilentAim
+			local aura, aim = tenacity.Modules.Killaura, tenacity.Modules.SilentAim
 			if not aura or not aim then
 				notif('Bot', 'Killaura and SilentAim are required.', 5, 'alert')
 				Bot:Toggle()
@@ -6784,12 +6784,12 @@ run(function()
 					else option:SetValue(saved.Value) end
 				end
 				for name, saved in savedModules do
-					if neon.Modules[name] == saved.Module then toggle(saved.Module, saved.Enabled) end
+					if tenacity.Modules[name] == saved.Module then toggle(saved.Module, saved.Enabled) end
 				end
 				status = 'Idle'
 			end)
 			for _, name in {'FrontlinesFly', 'Fly', 'Speed', 'TargetStrafe', 'LongJump', 'Killaura', 'SilentAim', 'AutoRespawn'} do
-				local module = neon.Modules[name]
+				local module = tenacity.Modules[name]
 				if module then
 					savedModules[name] = {Module = module, Enabled = module.Enabled}
 					toggle(module, false)
@@ -6945,7 +6945,7 @@ run(function()
 end)
 
 -- Only initialized inside the Frontlines client actor.
-neon.Libraries.frontlines = frontlines
-neon:Clean(function()
-	if neon.Libraries.frontlines == frontlines then neon.Libraries.frontlines = nil end
+tenacity.Libraries.frontlines = frontlines
+tenacity:Clean(function()
+	if tenacity.Libraries.frontlines == frontlines then tenacity.Libraries.frontlines = nil end
 end)
