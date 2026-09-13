@@ -528,6 +528,51 @@ run(function()
 		end
 		root.CFrame += offset
 	end)
+
+	local lowHopRay = RaycastParams.new()
+	lowHopRay.FilterType = Enum.RaycastFilterType.Exclude
+	lowHopRay.RespectCanCollide = true
+	lowHopRay.IgnoreWater = true
+
+	tenacity.Modules.Speed:AddMode('LowHop', function(options, moveDirection, dt)
+		local character = entitylib.character
+		local root = character and character.RootPart
+		if not root or not root.Parent or dt <= 0 then return end
+
+		local direction = moveDirection * Vector3.new(1, 0, 1)
+		local magnitude = direction.Magnitude
+		if magnitude <= 0.001 then return end
+		direction /= magnitude
+
+		lowHopRay.FilterDescendantsInstances = {character.Character, gameCamera}
+		lowHopRay.CollisionGroup = root.CollisionGroup
+
+		local velocity = root.AssemblyLinearVelocity
+		local desiredHorizontal = direction * 60
+		if options.WallCheck.Enabled then
+			local ray = workspace:Raycast(root.Position, desiredHorizontal * math.min(dt, 1 / 30), lowHopRay)
+			if ray then
+				desiredHorizontal = Vector3.new(velocity.X, 0, velocity.Z)
+			end
+		end
+
+		local floorHeight = math.max(character.HipHeight or 2.5, 2.5)
+		local groundRay = workspace:Raycast(root.Position, Vector3.new(0, -(floorHeight + 0.45), 0), lowHopRay)
+		local grounded = groundRay and groundRay.Distance <= floorHeight + 0.25
+		local desiredY = velocity.Y
+
+		if grounded and velocity.Y <= 1.5 then
+			desiredY = 22
+		elseif not grounded and velocity.Y <= 0 then
+			desiredY = math.min(velocity.Y, -38)
+		end
+
+		local desiredVelocity = Vector3.new(desiredHorizontal.X, desiredY, desiredHorizontal.Z)
+		local delta = desiredVelocity - velocity
+		if delta.Magnitude > 0.001 then
+			root:ApplyImpulse(delta * root.AssemblyMass)
+		end
+	end)
 end)
 
 
