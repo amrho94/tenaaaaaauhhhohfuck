@@ -8239,6 +8239,7 @@ end)
 local BetterSpeed, BetterFly
 
 run(function()
+	local Mode
 	local SpeedValue
 	local WallCheck
 	local AutoJump
@@ -8250,6 +8251,7 @@ run(function()
 	rayCheck.RespectCanCollide = true
 	local pulseTick = 0
 	local pulseState = true
+	local lowHopJumpTime
 	local windWalkerIndex
 	local windWalkerOriginal
 
@@ -8280,7 +8282,7 @@ run(function()
 		Function = function(callback)
 			frictionTable.BetterSpeed = callback or nil
 			updateVelocity()
-			setWindWalkerBoost(callback)
+			setWindWalkerBoost(callback and (not Mode or Mode.Value == 'Heatseeker'))
 
 			if callback then
 				pulseTick = tick()
@@ -8297,7 +8299,29 @@ run(function()
 					if state == Enum.HumanoidStateType.Climbing then return end
 
 					local moveDir = AntiFallDirection or humanoid.MoveDirection
-					if moveDir == Vector3.zero then return end
+					if moveDir == Vector3.zero then
+						lowHopJumpTime = nil
+						return
+					end
+
+					if Mode.Value == 'LowHop' then
+						local horizontal = root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
+						local diff = (moveDir * 60) - horizontal
+						if diff.Magnitude > 2 then
+							root:ApplyImpulse(diff * root.AssemblyMass)
+						end
+
+						if humanoid.FloorMaterial ~= Enum.Material.Air then
+							lowHopJumpTime = tick()
+							humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+						elseif lowHopJumpTime and tick() - lowHopJumpTime >= 0.12 then
+							local velocity = root.AssemblyLinearVelocity
+							if velocity.Y > -62 then
+								root.AssemblyLinearVelocity = Vector3.new(velocity.X, -62, velocity.Z)
+							end
+						end
+						return
+					end
 
 					local mult = 1
 					if Pulse.Enabled then
@@ -8330,14 +8354,27 @@ run(function()
 						humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 					end
 				end))
+			else
+				lowHopJumpTime = nil
 			end
 		end,
 		ExtraText = function()
-			return Pulse and Pulse.Enabled and 'Pulse' or 'Heatseeker'
+			return Mode and Mode.Value or 'Heatseeker'
 		end,
-		Tooltip = 'High WindWalker speed with pulse bursts.'
+		Tooltip = 'Heatseeker speed or a Minecraft-style impulse lowhop.'
 	})
 
+	Mode = BetterSpeed:Setting({
+		Type = 'dropdown',
+		Name = 'Mode',
+		List = {'Heatseeker', 'LowHop'},
+		Function = function()
+			if BetterSpeed.Enabled then
+				BetterSpeed:Toggle()
+				BetterSpeed:Toggle()
+			end
+		end
+	})
 	SpeedValue = BetterSpeed:Setting({
 		Type = 'slider',
 		Name = 'Speed',
