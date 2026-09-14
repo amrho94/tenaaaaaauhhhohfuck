@@ -8305,19 +8305,29 @@ run(function()
 					end
 
 					if Mode.Value == 'LowHop' then
-						local horizontal = root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
-						local diff = (moveDir * 60) - horizontal
-						if diff.Magnitude > 2 then
-							root:ApplyImpulse(diff * root.AssemblyMass)
-						end
+						local now = tick()
+						local grounded = humanoid.FloorMaterial ~= Enum.Material.Air
 
-						if humanoid.FloorMaterial ~= Enum.Material.Air then
-							lowHopJumpTime = tick()
-							humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-						elseif lowHopJumpTime and tick() - lowHopJumpTime >= 0.12 then
+						if grounded then
+							-- One 60-stud takeoff impulse per hop. Do not constantly hold 60 in the air.
+							if not lowHopJumpTime or now - lowHopJumpTime > 0.18 then
+								lowHopJumpTime = now
+								local horizontal = root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
+								local diff = (moveDir * 60) - horizontal
+								if diff.Magnitude > 2 then
+									root:ApplyImpulse(diff * root.AssemblyMass)
+								end
+								humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+							end
+						elseif lowHopJumpTime then
+							local elapsed = now - lowHopJumpTime
 							local velocity = root.AssemblyLinearVelocity
-							if velocity.Y > -62 then
-								root.AssemblyLinearVelocity = Vector3.new(velocity.X, -62, velocity.Z)
+
+							-- Minecraft-style fast fall: add gravity instead of snapping to a huge Y speed.
+							-- It starts near the top of the jump so the hop stays low and comes down quickly.
+							if elapsed >= 0.10 and velocity.Y <= 14 then
+								local extraGravity = workspace.Gravity * 1.15
+								root.AssemblyLinearVelocity = velocity + Vector3.new(0, -extraGravity * dt, 0)
 							end
 						end
 						return
