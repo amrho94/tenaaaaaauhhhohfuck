@@ -2018,16 +2018,16 @@ run(function()
 	local Animation
 	local AnimationMode
 	local AnimationSpeed
-	local AnimationTween
 	local Limit
 	local LegitAura
 	local Particles, Boxes = {}, {}
-	local anims, AnimDelay, AnimTween, armC0 = tenacity.Libraries.auraanims, tick()
+	local anims, AnimDelay, AnimTween, armC0, armWrist = tenacity.Libraries.auraanims, tick()
 	local AttackRemote
 	local LastManualSwing = 0
 	local NextAttack = 0
 	local AttackIndex = 1
 	local PrimaryTarget
+	local AuraAnimationToken = 0
 
 	local function getAttackRemote()
 		if AttackRemote then
@@ -2097,6 +2097,118 @@ run(function()
 		AttackIndex = 1
 		NextAttack = 0
 		store.KillauraTarget = nil
+	end
+
+	local function getAuraWrist()
+		local viewmodel = gameCamera:FindFirstChild('Viewmodel')
+		local rightHand = viewmodel and viewmodel:FindFirstChild('RightHand')
+		return rightHand and rightHand:FindFirstChild('RightWrist') or nil
+	end
+
+	local function cancelAuraTween()
+		if AnimTween then
+			pcall(function() AnimTween:Cancel() end)
+			AnimTween = nil
+		end
+	end
+
+	local function tweenAuraWrist(wrist, target, duration, waitForCompletion)
+		if not wrist or not wrist.Parent then return false end
+		cancelAuraTween()
+		AnimTween = tweenService:Create(
+			wrist,
+			TweenInfo.new(math.max(duration, 0.025), Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+			{C0 = target}
+		)
+		local tweenObject = AnimTween
+		tweenObject:Play()
+		if waitForCompletion then
+			tweenObject.Completed:Wait()
+		end
+		return true
+	end
+
+	local function restoreAuraWrist(duration)
+		if armWrist and armWrist.Parent and armC0 then
+			tweenAuraWrist(armWrist, armC0, duration or 0.18, false)
+		end
+	end
+
+	local function getAuraCycle(frames)
+		local cycle = {}
+		for i = 1, #frames do
+			cycle[#cycle + 1] = frames[i]
+		end
+		for i = #frames - 1, 1, -1 do
+			cycle[#cycle + 1] = {
+				CFrame = frames[i].CFrame,
+				Time = frames[i].Time
+			}
+		end
+		return cycle
+	end
+
+	local function stopAuraAnimation(returnTime)
+		AuraAnimationToken += 1
+		if returnTime and armC0 then
+			restoreAuraWrist(returnTime)
+		else
+			cancelAuraTween()
+		end
+	end
+
+	local function startAuraAnimation()
+		AuraAnimationToken += 1
+		local token = AuraAnimationToken
+		if not (Killaura and Killaura.Enabled and Animation and Animation.Enabled) then return end
+
+		task.spawn(function()
+			local animating = false
+			repeat
+				if token ~= AuraAnimationToken then break end
+				local wrist = getAuraWrist()
+				if wrist and wrist ~= armWrist then
+					cancelAuraTween()
+					armWrist = wrist
+					armC0 = wrist.C0
+					animating = false
+				elseif wrist and not armC0 then
+					armWrist = wrist
+					armC0 = wrist.C0
+				end
+
+				if Attacking and wrist and armC0 then
+					local frames = anims[AnimationMode.Value] or anims.Normal
+					if frames and #frames > 0 then
+						local speed = math.max(AnimationSpeed.Value, 0.1)
+						local cycle = getAuraCycle(frames)
+
+						if not animating then
+							animating = true
+							tweenAuraWrist(wrist, armC0 * cycle[1].CFrame, 0.12 / speed, true)
+						end
+
+						for i = 2, #cycle do
+							if token ~= AuraAnimationToken or (not Killaura.Enabled) or (not Animation.Enabled) or (not Attacking) then break end
+							local frame = cycle[i]
+							tweenAuraWrist(wrist, armC0 * frame.CFrame, frame.Time / speed, true)
+						end
+					else
+						task.wait(1 / math.max(UpdateRate.Value, 1))
+					end
+				elseif animating then
+					animating = false
+					restoreAuraWrist(0.18)
+					task.wait(0.18)
+				else
+					task.wait(1 / math.max(UpdateRate.Value, 1))
+				end
+			until token ~= AuraAnimationToken or (not Killaura.Enabled) or (not Animation.Enabled)
+
+			if token == AuraAnimationToken and armWrist and armWrist.Parent and armC0 then
+				tweenAuraWrist(armWrist, armC0, 0.16, false)
+			end
+		end)
 	end
 
 	local function collectTargets(root)
@@ -2240,44 +2352,7 @@ run(function()
 					end)
 				end
 
-				if Animation.Enabled then
-					task.spawn(function()
-						local started = false
-						repeat
-							if Attacking then
-								if not armC0 then
-									armC0 = gameCamera.Viewmodel.RightHand.RightWrist.C0
-								end
-								local first = not started
-								started = true
-
-								if AnimationMode.Value == 'Random' then
-									anims.Random = {{CFrame = CFrame.Angles(math.rad(math.random(1, 360)), math.rad(math.random(1, 360)), math.rad(math.random(1, 360))), Time = 0.12}}
-								end
-
-								for _, v in anims[AnimationMode.Value] do
-									AnimTween = tweenService:Create(gameCamera.Viewmodel.RightHand.RightWrist, TweenInfo.new(first and (AnimationTween.Enabled and 0.001 or 0.1) or v.Time / math.max(AnimationSpeed.Value, 0.1), Enum.EasingStyle.Linear), {
-										C0 = armC0 * v.CFrame
-									})
-									AnimTween:Play()
-									AnimTween.Completed:Wait()
-									first = false
-									if (not Killaura.Enabled) or (not Attacking) then break end
-								end
-							elseif started then
-								started = false
-								AnimTween = tweenService:Create(gameCamera.Viewmodel.RightHand.RightWrist, TweenInfo.new(AnimationTween.Enabled and 0.001 or 0.3, Enum.EasingStyle.Exponential), {
-									C0 = armC0
-								})
-								AnimTween:Play()
-							end
-
-							if not started then
-								task.wait(1 / UpdateRate.Value)
-							end
-						until (not Killaura.Enabled) or (not Animation.Enabled)
-					end)
-				end
+				startAuraAnimation()
 
 				repeat
 					local now = tick()
@@ -2336,12 +2411,7 @@ run(function()
 						lplr.PlayerGui.MobileUI['2'].Visible = true
 					end)
 				end
-				if armC0 then
-					AnimTween = tweenService:Create(gameCamera.Viewmodel.RightHand.RightWrist, TweenInfo.new(AnimationTween.Enabled and 0.001 or 0.3, Enum.EasingStyle.Exponential), {
-						C0 = armC0
-					})
-					AnimTween:Play()
-				end
+				stopAuraAnimation(0.18)
 			end
 		end,
 		Tooltip = 'Attack players around you\nwithout aiming at them.'
@@ -2536,18 +2606,17 @@ run(function()
 		Name = 'Custom Animation',
 		Function = function(callback)
 			AnimationMode.Object.Visible = callback
-			AnimationTween.Object.Visible = callback
 			AnimationSpeed.Object.Visible = callback
 			if Killaura.Enabled then
-				Killaura:Toggle()
-				Killaura:Toggle()
+				if callback then
+					startAuraAnimation()
+				else
+					stopAuraAnimation(0.18)
+				end
 			end
 		end
 	})
-	local animnames = {}
-	for i in anims do
-		table.insert(animnames, i)
-	end
+	local animnames = {'Normal', 'Normal Smooth', 'Normal Compact', 'Normal Wide', 'Normal Heavy', 'Normal Quick'}
 	AnimationMode = Killaura:CreateDropdown({
 		Name = 'Animation Mode',
 		List = animnames,
@@ -2560,11 +2629,6 @@ run(function()
 		Max = 2,
 		Default = 1,
 		Decimal = 10,
-		Darker = true,
-		Visible = false
-	})
-	AnimationTween = Killaura:CreateToggle({
-		Name = 'No Tween',
 		Darker = true,
 		Visible = false
 	})
