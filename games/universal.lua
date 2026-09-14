@@ -640,10 +640,10 @@ tenacity.Libraries.auraanims = {
 
 do
 	local anims = tenacity.Libraries.auraanims
-	local normalPoint = anims.Normal[2].CFrame.Position
-	local exhibitionPoint = anims.Exhibition[1].CFrame.Position
-	local centerPoint = normalPoint:Lerp(exhibitionPoint, 0.35)
-	local motionScale = 0.55
+	local normalAnchor = anims.Normal[1].CFrame
+	local exhibitionAnchor = anims.Exhibition[1].CFrame
+	local targetAnchor = normalAnchor:Lerp(exhibitionAnchor, 0.38)
+	local motionScale = 0.42
 	local convertedModes = {
 		'1.7', 'Sunny', 'Lucid', 'Astro', 'Smooth', 'Spin', 'Leaked', 'Old',
 		'Exhibition New', 'Swong', 'Stella', 'Flup', 'Noov', 'Komorebi', 'Rhys',
@@ -653,10 +653,15 @@ do
 	for _, name in convertedModes do
 		local frames = anims[name]
 		if frames and frames[1] then
-			local sourceCenter = frames[1].CFrame.Position
+			local sourceAnchor = frames[1].CFrame
+			local sourcePosition = sourceAnchor.Position
+			local sourceRotation = sourceAnchor.Rotation
+
 			for _, frame in frames do
-				local relative = (frame.CFrame.Position - sourceCenter) * motionScale
-				frame.CFrame = CFrame.new(centerPoint + relative) * frame.CFrame.Rotation
+				local relativePosition = (frame.CFrame.Position - sourcePosition) * motionScale
+				local relativeRotation = sourceRotation:ToObjectSpace(frame.CFrame.Rotation)
+				local targetPosition = targetAnchor.Position + targetAnchor:VectorToWorldSpace(relativePosition)
+				frame.CFrame = CFrame.new(targetPosition) * targetAnchor.Rotation * relativeRotation
 			end
 		end
 	end
