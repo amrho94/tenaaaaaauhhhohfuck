@@ -6860,7 +6860,7 @@ run(function()
 	tenacity.Components.HotbarList=function(optionsettings,children,api)
 		local optionapi={Type='HotbarList',Name='HotbarList',Hotbars={},Selected=1}
 		local surface=Color3.fromRGB(15,21,28);local raised=Color3.fromRGB(22,31,40);local text=Color3.fromRGB(229,235,240);local muted=Color3.fromRGB(131,145,157)
-		local function roundGui(obj,r)local c=Instance.new('UICorner');c.CornerRadius=UDim.new(0,r or6);c.Parent=obj end
+		local function roundGui(obj,r)local c=Instance.new('UICorner');c.CornerRadius=UDim.new(0,r or 6);c.Parent=obj end
 		local root=Instance.new('Frame');root.Name='HotbarList';root.BackgroundColor3=surface;root.BackgroundTransparency=.12;root.BorderSizePixel=0;root.Size=UDim2.new(1,-2,0,50);root.Parent=children;roundGui(root,6)
 		local edge=Instance.new('UIStroke');edge.Color=Color3.new(1,1,1);edge.Transparency=.93;edge.Parent=root
 		local title=Instance.new('TextLabel');title.BackgroundTransparency=1;title.Position=UDim2.fromOffset(10,0);title.Size=UDim2.new(1,-88,0,38);title.Text='Hotbar layouts';title.TextColor3=muted;title.TextSize=11;title.FontFace=uipallet.Font;title.TextXAlignment=Enum.TextXAlignment.Left;title.Parent=root
@@ -6884,8 +6884,8 @@ run(function()
 			for i=1,9 do local img=Instance.new('ImageLabel');img.BackgroundColor3=Color3.fromRGB(12,17,23);img.BackgroundTransparency=.15;img.BorderSizePixel=0;img.Position=UDim2.fromOffset(22+(i-1)*22,10);img.Size=UDim2.fromOffset(20,22);local id=hotbardata.Hotbar[tostring(i)];img.Image=id and bedwars.getIcon({itemType=id},true)or'';img.Parent=row;roundGui(img,4);hotbardata.Slots[i]=img end
 			local edit=Instance.new('TextButton');edit.AutoButtonColor=false;edit.BackgroundTransparency=1;edit.Position=UDim2.new(1,-62,0,0);edit.Size=UDim2.fromOffset(30,42);edit.Text='•••';edit.TextColor3=muted;edit.TextSize=12;edit.Parent=row
 			local del=Instance.new('TextButton');del.AutoButtonColor=false;del.BackgroundTransparency=1;del.Position=UDim2.new(1,-32,0,0);del.Size=UDim2.fromOffset(30,42);del.Text='×';del.TextColor3=muted;del.TextSize=15;del.Parent=row
-			row.MouseButton1Click:Connect(function()selectHotbar(table.find(optionapi.Hotbars,hotbardata)or1)end)
-			edit.MouseButton1Click:Connect(function()selectHotbar(table.find(optionapi.Hotbars,hotbardata)or1);optionapi:OpenEditor()end)
+			row.MouseButton1Click:Connect(function()selectHotbar(table.find(optionapi.Hotbars,hotbardata) or 1)end)
+			edit.MouseButton1Click:Connect(function()selectHotbar(table.find(optionapi.Hotbars,hotbardata) or 1);optionapi:OpenEditor()end)
 			del.MouseButton1Click:Connect(function()local i=table.find(optionapi.Hotbars,hotbardata);if not i then return end;row:Destroy();table.remove(optionapi.Hotbars,i);if #optionapi.Hotbars==0 then optionapi:AddHotbar() else selectHotbar(math.min(optionapi.Selected,#optionapi.Hotbars)) end end)
 			selectHotbar(self.Selected)
 			return hotbardata
@@ -6894,7 +6894,7 @@ run(function()
 		function optionapi:Load(savetab)
 			for _,v in self.Hotbars do if v.Object then v.Object:Destroy()end end;table.clear(self.Hotbars)
 			for _,v in (savetab and savetab.Hotbars or{})do self:AddHotbar(v)end
-			if #self.Hotbars==0 then self:AddHotbar()end;selectHotbar(savetab and savetab.Selected or1)
+			if #self.Hotbars==0 then self:AddHotbar()end;selectHotbar(savetab and savetab.Selected or 1)
 		end
 		add.MouseButton1Click:Connect(function()optionapi:AddHotbar();selectHotbar(#optionapi.Hotbars)end)
 		optionapi:AddHotbar()
