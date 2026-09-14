@@ -424,248 +424,35 @@ tenacity.Libraries.entity = entitylib
 tenacity.Libraries.whitelist = whitelist
 tenacity.Libraries.prediction = prediction
 tenacity.Libraries.hash = hash
-tenacity.Libraries.auraanims = {
-	Normal = {
-		{CFrame = CFrame.new(-0.17, -0.14, -0.12) * CFrame.Angles(math.rad(-53), math.rad(50), math.rad(-64)), Time = 0.1},
-		{CFrame = CFrame.new(-0.55, -0.59, -0.1) * CFrame.Angles(math.rad(-161), math.rad(54), math.rad(-6)), Time = 0.08},
-		{CFrame = CFrame.new(-0.62, -0.68, -0.07) * CFrame.Angles(math.rad(-167), math.rad(47), math.rad(-1)), Time = 0.03},
-		{CFrame = CFrame.new(-0.56, -0.86, 0.23) * CFrame.Angles(math.rad(-167), math.rad(49), math.rad(-1)), Time = 0.03}
-	},
-
-	Random = {},
-
-	['Horizontal Spin'] = {
-		{CFrame = CFrame.Angles(math.rad(-10), math.rad(-90), math.rad(-80)), Time = 0.12},
-		{CFrame = CFrame.Angles(math.rad(-10), math.rad(180), math.rad(-80)), Time = 0.12},
-		{CFrame = CFrame.Angles(math.rad(-10), math.rad(90), math.rad(-80)), Time = 0.12},
-		{CFrame = CFrame.Angles(math.rad(-10), 0, math.rad(-80)), Time = 0.12}
-	},
-
-	['Vertical Spin'] = {
-		{CFrame = CFrame.Angles(math.rad(-90), 0, math.rad(15)), Time = 0.12},
-		{CFrame = CFrame.Angles(math.rad(180), 0, math.rad(15)), Time = 0.12},
-		{CFrame = CFrame.Angles(math.rad(90), 0, math.rad(15)), Time = 0.12},
-		{CFrame = CFrame.Angles(0, 0, math.rad(15)), Time = 0.12}
-	},
-
-	['1.7'] = {
-		{CFrame = CFrame.new(0.419, -0.44, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.37, -0.439, -0.659) * CFrame.Angles(math.rad(148.206), math.rad(7.669), math.rad(50.722)), Time = 0.04},
-		{CFrame = CFrame.new(0.366, -0.431, -0.688) * CFrame.Angles(math.rad(160.507), math.rad(18.855), math.rad(62.868)), Time = 0.04},
-		{CFrame = CFrame.new(0.371, -0.425, -0.678) * CFrame.Angles(math.rad(-172.982), math.rad(29.659), math.rad(72.473)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.44, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Sunny = {
-		{CFrame = CFrame.new(0.398, -0.398, -0.617) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.237, -0.505, -0.855) * CFrame.Angles(math.rad(148.206), math.rad(7.669), math.rad(50.722)), Time = 0.04},
-		{CFrame = CFrame.new(0.266, -0.457, -0.904) * CFrame.Angles(math.rad(160.507), math.rad(18.855), math.rad(62.868)), Time = 0.04},
-		{CFrame = CFrame.new(0.306, -0.394, -0.845) * CFrame.Angles(math.rad(-172.982), math.rad(29.659), math.rad(72.473)), Time = 0.04},
-		{CFrame = CFrame.new(0.398, -0.398, -0.617) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Lucid = {
-		{CFrame = CFrame.new(0.419, -0.38, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.37, -0.379, -0.659) * CFrame.Angles(math.rad(148.206), math.rad(7.669), math.rad(50.722)), Time = 0.04},
-		{CFrame = CFrame.new(0.366, -0.371, -0.688) * CFrame.Angles(math.rad(160.507), math.rad(18.855), math.rad(62.868)), Time = 0.04},
-		{CFrame = CFrame.new(0.371, -0.365, -0.678) * CFrame.Angles(math.rad(-172.982), math.rad(29.659), math.rad(72.473)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.38, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Astro = {
-		{CFrame = CFrame.new(0.419, -0.41, -0.629) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.387, -0.425, -0.66) * CFrame.Angles(math.rad(-174.243), math.rad(5.726), math.rad(63.923)), Time = 0.04},
-		{CFrame = CFrame.new(0.371, -0.417, -0.696) * CFrame.Angles(math.rad(-168.412), math.rad(20.277), math.rad(67.642)), Time = 0.04},
-		{CFrame = CFrame.new(0.372, -0.408, -0.705) * CFrame.Angles(math.rad(-156.264), math.rad(30.902), math.rad(73.291)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.41, -0.629) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Smooth = {
-		{CFrame = CFrame.new(0.56, -0.48, -0.72) * CFrame.Angles(math.rad(33.409), math.rad(-47.285), math.rad(63.487)), Time = 0.04},
-		{CFrame = CFrame.new(0.56, -0.56, -0.72) * CFrame.Angles(math.rad(31.34), math.rad(-35.896), math.rad(97.612)), Time = 0.04},
-		{CFrame = CFrame.new(0.56, -0.544, -0.72) * CFrame.Angles(math.rad(33.644), math.rad(-37.654), math.rad(91.779)), Time = 0.04},
-		{CFrame = CFrame.new(0.56, -0.513, -0.72) * CFrame.Angles(math.rad(35.62), math.rad(-41.966), math.rad(79.294)), Time = 0.04},
-		{CFrame = CFrame.new(0.56, -0.48, -0.72) * CFrame.Angles(math.rad(33.409), math.rad(-47.285), math.rad(63.487)), Time = 0.04}
-	},
-
-	Spin = {
-		{CFrame = CFrame.new(0.277, -0.44, -1.003) * CFrame.Angles(math.rad(93.159), math.rad(32.75), math.rad(-114.276)), Time = 0.04},
-		{CFrame = CFrame.new(0.277, -0.44, -1.003) * CFrame.Angles(math.rad(144.482), math.rad(39.742), math.rad(132.165)), Time = 0.04},
-		{CFrame = CFrame.new(0.277, -0.44, -1.003) * CFrame.Angles(math.rad(145.323), math.rad(-1.66), math.rad(50.085)), Time = 0.04},
-		{CFrame = CFrame.new(0.277, -0.44, -1.003) * CFrame.Angles(math.rad(104.153), math.rad(-7.316), math.rad(-35.073)), Time = 0.04},
-		{CFrame = CFrame.new(0.277, -0.44, -1.003) * CFrame.Angles(math.rad(93.159), math.rad(32.75), math.rad(-114.276)), Time = 0.04}
-	},
-
-	Leaked = {
-		{CFrame = CFrame.new(0.419, -0.43, -0.709) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.43, -0.709) * CFrame.Angles(math.rad(-115.438), math.rad(-14.358), math.rad(99.926)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.43, -0.709) * CFrame.Angles(math.rad(-123.248), math.rad(-8.764), math.rad(96.552)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.43, -0.709) * CFrame.Angles(math.rad(-136.373), math.rad(3.466), math.rad(92.308)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.43, -0.709) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Old = {
-		{CFrame = CFrame.new(0.419, -0.22, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.37, -0.219, -0.659) * CFrame.Angles(math.rad(148.206), math.rad(7.669), math.rad(50.722)), Time = 0.04},
-		{CFrame = CFrame.new(0.366, -0.211, -0.688) * CFrame.Angles(math.rad(160.507), math.rad(18.855), math.rad(62.868)), Time = 0.04},
-		{CFrame = CFrame.new(0.371, -0.205, -0.678) * CFrame.Angles(math.rad(-172.982), math.rad(29.659), math.rad(72.473)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.22, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Exhibition = {
-		{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 0.1},
-		{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 0.2}
-	},
-
-	['Exhibition Old'] = {
-		{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 0.15},
-		{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 0.05},
-		{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 0.1},
-		{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 0.05},
-		{CFrame = CFrame.new(0.63, -0.1, 1.37) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 0.15}
-	},
-
-	['Exhibition New'] = {
-		{CFrame = CFrame.new(0.419, -0.36, -0.589) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.363, -0.353, -0.719) * CFrame.Angles(math.rad(163.932), math.rad(26.613), math.rad(65.495)), Time = 0.04},
-		{CFrame = CFrame.new(0.375, -0.338, -0.69) * CFrame.Angles(math.rad(172.046), math.rad(22.147), math.rad(71.043)), Time = 0.04},
-		{CFrame = CFrame.new(0.399, -0.333, -0.635) * CFrame.Angles(math.rad(-170.091), math.rad(16.958), math.rad(81.415)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.36, -0.589) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Swong = {
-		{CFrame = CFrame.new(0.419, -0.34, -0.629) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.401, -0.404, -0.626) * CFrame.Angles(math.rad(-166.18), math.rad(-5.817), math.rad(54.951)), Time = 0.04},
-		{CFrame = CFrame.new(0.369, -0.391, -0.674) * CFrame.Angles(math.rad(-160.781), math.rad(12.142), math.rad(57.95)), Time = 0.04},
-		{CFrame = CFrame.new(0.365, -0.361, -0.7) * CFrame.Angles(math.rad(-151.169), math.rad(27.619), math.rad(67.414)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.34, -0.629) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Stella = {
-		{CFrame = CFrame.new(0.362, -0.3, -0.635) * CFrame.Angles(math.rad(-127.536), math.rad(24.799), math.rad(90.889)), Time = 0.04},
-		{CFrame = CFrame.new(0.293, -0.44, -0.714) * CFrame.Angles(math.rad(168.158), math.rad(1.055), math.rad(56.973)), Time = 0.04},
-		{CFrame = CFrame.new(0.303, -0.406, -0.775) * CFrame.Angles(math.rad(-177.785), math.rad(15.699), math.rad(64.133)), Time = 0.04},
-		{CFrame = CFrame.new(0.327, -0.341, -0.78) * CFrame.Angles(math.rad(-148.91), math.rad(29.044), math.rad(68.327)), Time = 0.04},
-		{CFrame = CFrame.new(0.362, -0.3, -0.635) * CFrame.Angles(math.rad(-127.536), math.rad(24.799), math.rad(90.889)), Time = 0.04}
-	},
-
-	Flup = {
-		{CFrame = CFrame.new(0.343, -0.309, -0.639) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.343, -0.309, -0.639) * CFrame.Angles(math.rad(169.232), math.rad(-13.549), math.rad(74.581)), Time = 0.04},
-		{CFrame = CFrame.new(0.343, -0.309, -0.639) * CFrame.Angles(math.rad(179.718), math.rad(-8.773), math.rad(77.491)), Time = 0.04},
-		{CFrame = CFrame.new(0.343, -0.309, -0.639) * CFrame.Angles(math.rad(-162.671), math.rad(2.469), math.rad(83.814)), Time = 0.04},
-		{CFrame = CFrame.new(0.343, -0.309, -0.639) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Noov = {
-		{CFrame = CFrame.new(0.342, -0.343, -0.696) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.342, -0.343, -0.696) * CFrame.Angles(math.rad(-158.908), math.rad(44.627), math.rad(125.208)), Time = 0.04},
-		{CFrame = CFrame.new(0.342, -0.343, -0.696) * CFrame.Angles(math.rad(-154.9), math.rad(39.672), math.rad(116.732)), Time = 0.04},
-		{CFrame = CFrame.new(0.342, -0.343, -0.696) * CFrame.Angles(math.rad(-150.377), math.rad(29.389), math.rad(103.174)), Time = 0.04},
-		{CFrame = CFrame.new(0.342, -0.343, -0.696) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Komorebi = {
-		{CFrame = CFrame.new(0.419, -0.29, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.435, -0.303, -0.558) * CFrame.Angles(math.rad(-153.706), math.rad(1.823), math.rad(86.188)), Time = 0.04},
-		{CFrame = CFrame.new(0.432, -0.3, -0.562) * CFrame.Angles(math.rad(-152.799), math.rad(4.933), math.rad(87.484)), Time = 0.04},
-		{CFrame = CFrame.new(0.425, -0.295, -0.57) * CFrame.Angles(math.rad(-150.982), math.rad(11.18), math.rad(89.452)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.29, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Rhys = {
-		{CFrame = CFrame.new(0, -0.05, -0.269) * CFrame.Angles(math.rad(-146.65), math.rad(26.403), math.rad(85.196)), Time = 0.04},
-		{CFrame = CFrame.new(-0.08, -0.063, -0.434) * CFrame.Angles(math.rad(163.164), math.rad(15.856), math.rad(57.433)), Time = 0.04},
-		{CFrame = CFrame.new(-0.067, -0.045, -0.413) * CFrame.Angles(math.rad(173.522), math.rad(17.179), math.rad(63.547)), Time = 0.04},
-		{CFrame = CFrame.new(-0.037, -0.029, -0.352) * CFrame.Angles(math.rad(-166.904), math.rad(20.936), math.rad(74.452)), Time = 0.04},
-		{CFrame = CFrame.new(0, -0.05, -0.269) * CFrame.Angles(math.rad(-146.65), math.rad(26.403), math.rad(85.196)), Time = 0.04}
-	},
-
-	Swing = {
-		{CFrame = CFrame.new(0.459, -0.345, -0.506) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.326, -0.341, -0.726) * CFrame.Angles(math.rad(148.206), math.rad(7.669), math.rad(50.722)), Time = 0.04},
-		{CFrame = CFrame.new(0.348, -0.315, -0.735) * CFrame.Angles(math.rad(160.507), math.rad(18.855), math.rad(62.868)), Time = 0.04},
-		{CFrame = CFrame.new(0.373, -0.3, -0.662) * CFrame.Angles(math.rad(-172.982), math.rad(29.659), math.rad(72.473)), Time = 0.04},
-		{CFrame = CFrame.new(0.459, -0.345, -0.506) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	['?'] = {
-		{CFrame = CFrame.new(0.334, -0.44, -0.437) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.272, -0.347, -0.564) * CFrame.Angles(math.rad(148.206), math.rad(7.669), math.rad(50.722)), Time = 0.04},
-		{CFrame = CFrame.new(0.252, -0.353, -0.599) * CFrame.Angles(math.rad(160.507), math.rad(18.855), math.rad(62.868)), Time = 0.04},
-		{CFrame = CFrame.new(0.245, -0.381, -0.581) * CFrame.Angles(math.rad(-172.982), math.rad(29.659), math.rad(72.473)), Time = 0.04},
-		{CFrame = CFrame.new(0.334, -0.44, -0.437) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Stab = {
-		{CFrame = CFrame.new(0.875, -0.475, -0.764) * CFrame.Angles(math.rad(171.414), math.rad(56.199), math.rad(121.998)), Time = 0.04},
-		{CFrame = CFrame.new(0.875, -0.475, -0.764) * CFrame.Angles(math.rad(171.414), math.rad(56.199), math.rad(121.998)), Time = 0.04},
-		{CFrame = CFrame.new(0.875, -0.475, -0.089) * CFrame.Angles(math.rad(171.414), math.rad(56.199), math.rad(121.998)), Time = 0.04},
-		{CFrame = CFrame.new(0.875, -0.475, -0.242) * CFrame.Angles(math.rad(171.414), math.rad(56.199), math.rad(121.998)), Time = 0.04},
-		{CFrame = CFrame.new(0.875, -0.475, -0.764) * CFrame.Angles(math.rad(171.414), math.rad(56.199), math.rad(121.998)), Time = 0.04}
-	},
-
-	Beta = {
-		{CFrame = CFrame.new(0.466, -0.363, -0.858) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.465, -0.382, -0.876) * CFrame.Angles(math.rad(-155.033), math.rad(18.03), math.rad(89.915)), Time = 0.04},
-		{CFrame = CFrame.new(0.481, -0.438, -0.919) * CFrame.Angles(math.rad(-170.918), math.rad(23.381), math.rad(86.36)), Time = 0.04},
-		{CFrame = CFrame.new(0.499, -0.472, -0.936) * CFrame.Angles(math.rad(-179.654), math.rad(28.65), math.rad(85.277)), Time = 0.04},
-		{CFrame = CFrame.new(0.466, -0.363, -0.858) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Dortware = {
-		{CFrame = CFrame.new(0.453, -0.417, -0.847) * CFrame.Angles(math.rad(-149.06), math.rad(19.225), math.rad(92.319)), Time = 0.04},
-		{CFrame = CFrame.new(0.452, -0.451, -0.868) * CFrame.Angles(math.rad(-163.615), math.rad(20.871), math.rad(94.28)), Time = 0.04},
-		{CFrame = CFrame.new(0.453, -0.444, -0.865) * CFrame.Angles(math.rad(-161.874), math.rad(25.198), math.rad(98.942)), Time = 0.04},
-		{CFrame = CFrame.new(0.453, -0.431, -0.857) * CFrame.Angles(math.rad(-156.804), math.rad(26.55), math.rad(100.371)), Time = 0.04},
-		{CFrame = CFrame.new(0.453, -0.417, -0.847) * CFrame.Angles(math.rad(-148.635), math.rad(16.649), math.rad(89.605)), Time = 0.04}
-	},
-
-	Avatar = {
-		{CFrame = CFrame.new(0.419, -0.44, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.4, -0.394, -0.649) * CFrame.Angles(math.rad(172.177), math.rad(12.213), math.rad(78.737)), Time = 0.04},
-		{CFrame = CFrame.new(0.389, -0.4, -0.667) * CFrame.Angles(math.rad(-179.791), math.rad(24.83), math.rad(80.958)), Time = 0.04},
-		{CFrame = CFrame.new(0.381, -0.416, -0.66) * CFrame.Angles(math.rad(-162.192), math.rad(33.414), math.rad(79.814)), Time = 0.04},
-		{CFrame = CFrame.new(0.419, -0.44, -0.579) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	},
-
-	Tap = {
-		{CFrame = CFrame.new(0.429, -0.146, -0.589) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04},
-		{CFrame = CFrame.new(0.402, -0.146, -0.623) * CFrame.Angles(math.rad(-145.619), math.rad(29.31), math.rad(82.99)), Time = 0.04},
-		{CFrame = CFrame.new(0.395, -0.146, -0.636) * CFrame.Angles(math.rad(-144.052), math.rad(32.99), math.rad(79.962)), Time = 0.04},
-		{CFrame = CFrame.new(0.402, -0.146, -0.623) * CFrame.Angles(math.rad(-145.619), math.rad(29.31), math.rad(82.99)), Time = 0.04},
-		{CFrame = CFrame.new(0.429, -0.146, -0.589) * CFrame.Angles(math.rad(-148.831), math.rad(17.939), math.rad(90.955)), Time = 0.04}
-	}
+local normalAuraAnimation = {
+	{CFrame = CFrame.new(-0.17, -0.14, -0.12) * CFrame.Angles(math.rad(-53), math.rad(50), math.rad(-64)), Time = 0.1},
+	{CFrame = CFrame.new(-0.55, -0.59, -0.1) * CFrame.Angles(math.rad(-161), math.rad(54), math.rad(-6)), Time = 0.08},
+	{CFrame = CFrame.new(-0.62, -0.68, -0.07) * CFrame.Angles(math.rad(-167), math.rad(47), math.rad(-1)), Time = 0.03},
+	{CFrame = CFrame.new(-0.56, -0.86, 0.23) * CFrame.Angles(math.rad(-167), math.rad(49), math.rad(-1)), Time = 0.03}
 }
 
-do
-	local anims = tenacity.Libraries.auraanims
-	local normalAnchor = anims.Normal[1].CFrame
-	local exhibitionAnchor = anims.Exhibition[1].CFrame
-	local targetAnchor = normalAnchor:Lerp(exhibitionAnchor, 0.38)
-	local motionScale = 0.42
-	local convertedModes = {
-		'1.7', 'Sunny', 'Lucid', 'Astro', 'Smooth', 'Spin', 'Leaked', 'Old',
-		'Exhibition New', 'Swong', 'Stella', 'Flup', 'Noov', 'Komorebi', 'Rhys',
-		'Swing', '?', 'Stab', 'Beta', 'Dortware', 'Avatar', 'Tap'
-	}
-
-	for _, name in convertedModes do
-		local frames = anims[name]
-		if frames and frames[1] then
-			local sourceAnchor = frames[1].CFrame
-			local sourcePosition = sourceAnchor.Position
-			local sourceRotation = sourceAnchor.Rotation
-
-			for _, frame in frames do
-				local relativePosition = (frame.CFrame.Position - sourcePosition) * motionScale
-				local relativeRotation = sourceRotation:ToObjectSpace(frame.CFrame.Rotation)
-				local targetPosition = targetAnchor.Position + targetAnchor:VectorToWorldSpace(relativePosition)
-				frame.CFrame = CFrame.new(targetPosition) * targetAnchor.Rotation * relativeRotation
-			end
-		end
+local function makeNormalAuraVariant(positionScale, rotationScale, timeScale)
+	local frames = {}
+	local anchor = normalAuraAnimation[1].CFrame
+	for _, frame in normalAuraAnimation do
+		local relative = anchor:ToObjectSpace(frame.CFrame)
+		local axis, angle = relative.Rotation:ToAxisAngle()
+		frames[#frames + 1] = {
+			CFrame = anchor * CFrame.new(relative.Position * positionScale) * CFrame.fromAxisAngle(axis, angle * rotationScale),
+			Time = frame.Time * timeScale
+		}
 	end
+	return frames
 end
+
+tenacity.Libraries.auraanims = {
+	Normal = makeNormalAuraVariant(1, 1, 1),
+	['Normal Smooth'] = makeNormalAuraVariant(0.88, 0.84, 1.22),
+	['Normal Compact'] = makeNormalAuraVariant(0.68, 0.74, 0.92),
+	['Normal Wide'] = makeNormalAuraVariant(1.13, 1.06, 1.02),
+	['Normal Heavy'] = makeNormalAuraVariant(0.94, 1.1, 1.34),
+	['Normal Quick'] = makeNormalAuraVariant(0.9, 0.96, 0.72)
+}
 
 local SpeedMethods
 local SpeedMethodList = {'Velocity'}
